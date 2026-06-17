@@ -1,1240 +1,1513 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatchdayOS | MENA Football Campaign & Programmatic Budget Planner | Built by Rinzi</title>
-    <meta name="description"
-        content="MatchdayOS helps marketers make better decisions using empirical audience intelligence, localized platform behavior, and programmatic media planning frameworks built specifically for MENA tournament cycles.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MatchdayOS is a compact audience intelligence and budget simulator for football tournament campaign planning across GCC and MENA." />
+  <title>MatchdayOS | Audience Intelligence & Budget Simulator</title>
 
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="MatchdayOS | MENA Football Campaign & Programmatic Budget Planner">
-    <meta property="og:description"
-        content="MatchdayOS helps marketers make better decisions using empirical audience intelligence, localized platform behavior, and programmatic media planning frameworks.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://matchdayos.com">
-    <meta property="og:image" content="https://matchdayos.com/og-image.jpg">
+  <!-- jQuery preserved as the interaction layer. No React/Vue/heavy framework. -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MatchdayOS | MENA Football Campaign Planner">
-    <meta name="twitter:description"
-        content="Programmatic media planning framework built specifically for MENA tournament cycles.">
-    <meta name="twitter:image" content="https://matchdayos.com/twitter-image.jpg">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f5f7;
+      --surface-2: #fbfbfd;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --muted-2: #86868b;
+      --line: #d2d2d7;
+      --line-soft: #e8e8ed;
+      --black: #000000;
+      --white: #ffffff;
+      --accent: #1d1d1f;
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-soft: 0 18px 60px rgba(0, 0, 0, .08);
+      --shadow-card: 0 10px 30px rgba(0, 0, 0, .05);
+      --max: 1120px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
 
-    <!-- Favicon (Generated SVG Placeholder) -->
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
-    <!-- Canonical Link -->
-    <link rel="canonical" href="https://matchdayos.com">
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
 
-    <!-- Preconnects -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
 
-    <!-- External Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    .container {
+      width: min(var(--max), calc(100% - 34px));
+      margin: 0 auto;
+    }
 
-    <style>
-        /* Custom Font Import */
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+    /* Apple-style compact top bar */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 46px;
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
 
-        /* Theme Variables - Pure Void Black Palette */
-        :root {
-            --bg-dark: #000000;
-            --bg-card: #050508;
-            --bg-surface: #09090c;
+    .nav-inner {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-            --accent-emerald: #10B981;
-            --accent-emerald-glow: rgba(16, 185, 129, 0.1);
-            --accent-cobalt: #3B82F6;
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      white-space: nowrap;
+    }
 
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #475569;
+    .ball-logo {
+      width: 19px;
+      height: 19px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--ink);
+    }
 
-            --border-color: #121216;
-        }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      font-size: 12px;
+      color: #424245;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased;
-        }
+    .nav-links a { transition: color .2s var(--ease); }
+    .nav-links a:hover { color: var(--black); }
 
-        .font-mono-custom {
-            font-family: 'JetBrains Mono', monospace;
-        }
+    .nav-cta {
+      height: 28px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--black);
+      font-size: 12px;
+      font-weight: 600;
+      transition: transform .2s var(--ease), opacity .2s var(--ease);
+    }
 
-        /* Glass and Border Utility Classes with Soft Micro-glow */
-        .glass-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.8);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    .nav-cta:hover { transform: translateY(-1px); opacity: .9; }
 
-        .glass-card:hover {
-            border-color: #22222a;
-            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.9);
-        }
+    .menu-toggle {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+    }
 
-        /* Input Slider Styling */
-        input[type="range"] {
-            -webkit-appearance: none;
-            background: #121216;
-            border-radius: 9999px;
-            height: 4px;
-            outline: none;
-        }
+    main { overflow: hidden; }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent-emerald);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-            transition: transform 0.1s;
-        }
+    section { position: relative; }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.3);
-        }
+    /* First fold: tiny product intro + immediate product modules */
+    .hero {
+      padding: 70px 0 26px;
+      text-align: center;
+    }
 
-        /* Subtle Background Grid Pattern */
-        .cyber-grid {
-            background-image:
-                linear-gradient(rgba(39, 39, 42, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(39, 39, 42, 0.08) 1px, transparent 1px);
-            background-size: 32px 32px;
-        }
+    .eyebrow {
+      margin: 0 0 14px;
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -.02em;
+    }
 
-        /* Hide scrollbar for tabs */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+    .hero h1 {
+      max-width: 860px;
+      margin: 0 auto;
+      font-size: clamp(44px, 7vw, 88px);
+      line-height: .94;
+      letter-spacing: -.065em;
+      font-weight: 750;
+      color: var(--ink);
+    }
 
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+    .hero-copy {
+      max-width: 690px;
+      margin: 20px auto 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.25;
+      letter-spacing: -.025em;
+      font-weight: 450;
+    }
 
-        /* Analogue Grayscale Headshot Filter & Film Grain Overlay */
-        .film-grain-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 50%;
-        }
+    .hero-actions {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .film-grain-container::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            opacity: 0.18;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            mix-blend-mode: overlay;
-        }
+    .pill-button {
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      transition: transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+    }
 
-        .headshot-bw {
-            filter: grayscale(100%) contrast(115%) brightness(95%);
-            object-fit: cover;
-            width: 125%;
-            height: 125%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+    .pill-button.primary { background: var(--black); color: var(--white); }
+    .pill-button.secondary { background: var(--surface); color: var(--ink); }
+    .pill-button:hover { transform: translateY(-2px); }
+
+    .product-strip {
+      margin: 34px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .strip-card {
+      min-height: 126px;
+      padding: 22px;
+      background: var(--surface-2);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-lg);
+      text-align: left;
+      box-shadow: var(--shadow-card);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+
+    .strip-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+
+    .icon-bubble {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+
+    .strip-card h3 {
+      margin: 0 0 7px;
+      font-size: 18px;
+      line-height: 1.05;
+      letter-spacing: -.035em;
+    }
+
+    .strip-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      letter-spacing: -.01em;
+    }
+
+    .section-head {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .section-kicker {
+      margin: 0 0 8px;
+      color: var(--muted-2);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-weight: 700;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: .98;
+      letter-spacing: -.055em;
+      font-weight: 750;
+    }
+
+    .section-head p {
+      max-width: 360px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
+      letter-spacing: -.015em;
+    }
+
+    /* Audience intelligence appears fast after intro */
+    .audience {
+      padding: 38px 0 42px;
+    }
+
+    .audience-board {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .market-list {
+      padding: 12px;
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line-soft);
+    }
+
+    .market-btn {
+      width: 100%;
+      margin: 0;
+      padding: 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: transparent;
+      border-radius: 18px;
+      color: var(--ink);
+      text-align: left;
+      transition: background .2s var(--ease), transform .2s var(--ease);
+    }
+
+    .market-btn + .market-btn { margin-top: 4px; }
+    .market-btn:hover { background: rgba(255,255,255,.75); }
+    .market-btn.active { background: var(--white); box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+
+    .market-name {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .market-name strong {
+      font-size: 14px;
+      letter-spacing: -.02em;
+    }
+
+    .market-name span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .market-score {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #f5f5f7;
+      color: var(--ink);
+    }
+
+    .audience-panel {
+      min-height: 416px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(135deg, rgba(245,245,247,1), rgba(255,255,255,1) 55%),
+        #fff;
+      border: 1px solid var(--line-soft);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .audience-panel::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: inset 0 0 0 24px rgba(0,0,0,.018);
+    }
+
+    .panel-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .panel-top h3 {
+      margin: 0 0 8px;
+      font-size: clamp(32px, 4.5vw, 58px);
+      line-height: .95;
+      letter-spacing: -.06em;
+      font-weight: 760;
+    }
+
+    .panel-top p {
+      max-width: 430px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
+      letter-spacing: -.015em;
+    }
+
+    .large-number {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .large-number strong {
+      display: block;
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: .9;
+      letter-spacing: -.06em;
+      font-weight: 760;
+    }
+
+    .large-number span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .signal-grid {
+      position: relative;
+      z-index: 1;
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .signal {
+      padding: 18px;
+      min-height: 130px;
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid var(--line-soft);
+      border-radius: 22px;
+    }
+
+    .signal svg { margin-bottom: 20px; color: var(--ink); }
+    .signal strong { display: block; font-size: 14px; letter-spacing: -.02em; }
+    .signal span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+    .tags {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    /* Simulator */
+    .simulator {
+      padding: 46px 0 54px;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+    }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .control-card,
+    .result-card {
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+    }
+
+    .control-card { padding: 24px; }
+    .result-card { padding: 24px; }
+
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field-head {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: -.015em;
+    }
+
+    .value-pill {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      height: 46px;
+      padding: 0 42px 0 14px;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid transparent;
+      border-radius: 14px;
+      outline: none;
+      appearance: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .select-wrap::after {
+      content: "⌄";
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-56%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 17px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #1d1d1f;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 5px;
+      background: var(--surface);
+      border-radius: 16px;
+    }
+
+    .seg-btn {
+      height: 38px;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      transition: background .2s var(--ease), color .2s var(--ease), box-shadow .2s var(--ease);
+    }
+
+    .seg-btn.active {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
+    }
+
+
+    .results-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .results-head h3 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.05em;
+    }
+
+    .results-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .status-dot {
+      flex: 0 0 auto;
+      min-width: 92px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      padding: 16px 14px;
+      min-height: 100px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid rgba(0,0,0,.03);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(20px, 2.2vw, 30px);
+      line-height: .98;
+      letter-spacing: -.05em;
+    }
+
+    .metric em {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    .platforms {
+      margin-top: 12px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line-soft);
+      background: #fff;
+    }
+
+    .platforms-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .split-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 42px;
+      align-items: center;
+      gap: 10px;
+      margin: 11px 0;
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--ink);
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 30%;
+      border-radius: 999px;
+      background: var(--black);
+      transform-origin: left center;
+      transition: width .35s var(--ease);
+    }
+
+    .diagnostic {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      letter-spacing: -.01em;
+    }
+
+    .diagnostic strong { color: var(--ink); }
+
+    /* Final compact framework */
+    .framework {
+      padding: 56px 0 68px;
+      background: #fff;
+    }
+
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .framework-card {
+      min-height: 154px;
+      padding: 20px;
+      border-radius: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--line-soft);
+      box-shadow: var(--shadow-card);
+    }
+
+    .framework-card svg { margin-bottom: 22px; }
+    .framework-card strong { display: block; font-size: 15px; line-height: 1.05; letter-spacing: -.03em; }
+    .framework-card span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+    .closing {
+      margin-top: 16px;
+      padding: 34px;
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .closing h2 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 3.3vw, 42px);
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    .closing p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .product-strip,
+      .audience-board,
+      .sim-grid { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .framework-grid { grid-template-columns: repeat(2, 1fr); }
+      .signal-grid { grid-template-columns: repeat(2, 1fr); }
+      .large-number { text-align: left; }
+      .panel-top { flex-direction: column; }
+    }
+
+    @media (max-width: 760px) {
+      .nav-links,
+      .nav-cta { display: none; }
+      .menu-toggle { display: inline-grid; place-items: center; }
+      .nav.open .nav-links {
+        display: flex;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 46px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 10px 17px 18px;
+        background: rgba(255,255,255,.96);
+        border-bottom: 1px solid rgba(0,0,0,.06);
+      }
+      .nav.open .nav-links a { width: 100%; padding: 13px 0; border-bottom: 1px solid var(--line-soft); }
+      .hero { padding-top: 52px; }
+      .hero h1 { font-size: clamp(42px, 15vw, 66px); }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .market-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .market-btn { padding: 12px; }
+      .market-score { display: none; }
+      .metric-grid,
+      .signal-grid,
+      .framework-grid { grid-template-columns: 1fr; }
+      .closing { align-items: flex-start; flex-direction: column; }
+      .split-row { grid-template-columns: 82px 1fr 38px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+      .fade-up { opacity: 1; transform: none; }
+    }
+
+    .site-footer {
+      padding: 26px 0 34px;
+      background: var(--white);
+      border-top: 1px solid var(--line-soft);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .footer-mark {
+      width: 18px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--white);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+  </style>
 </head>
+<body>
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="MatchdayOS home">
+        <span class="ball-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7.7 15.8 10 14.5 14.2h-5L8.2 10 12 7.7Z" />
+            <path d="M12 7.7V3.2M15.8 10l4.1-1.4M14.5 14.2l2.5 3.4M9.5 14.2 7 17.6M8.2 10 4.1 8.6" />
+          </svg>
+        </span>
+        MatchdayOS
+      </a>
 
-<body class="selection:bg-emerald-500/30 selection:text-emerald-200">
+      <div class="nav-links" id="navLinks">
+        <a href="#audience">Audience</a>
+        <a href="#simulator">Simulator</a>
+        <a href="#framework">Framework</a>
+      </div>
 
-    <!-- Navigation -->
-    <nav class="sticky top-0 bg-black/95 backdrop-blur-xl border-b border-zinc-900/80 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-2.5 h-6 bg-emerald-500"></div>
-                <div class="flex flex-col leading-none">
-                    <span
-                        class="text-sm font-bold tracking-widest text-white uppercase font-mono-custom">MatchdayOS</span>
-                    <span class="text-[9px] text-zinc-500 font-mono-custom uppercase tracking-wider mt-1">Football
-                        Audience Intelligence</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-6 text-[10px] font-mono-custom uppercase tracking-wider text-zinc-400">
-                <a href="#intelligence" class="hover:text-white transition-colors">Intelligence</a>
-                <a href="#simulator" class="hover:text-emerald-400 transition-colors flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Simulator
-                </a>
-                <a href="#framework" class="hover:text-white transition-colors">Framework</a>
-                <div class="hidden sm:block h-3 w-px bg-zinc-800"></div>
-                <span class="hidden sm:inline text-zinc-600">Built by Rinzi</span>
-            </div>
+      <a class="nav-cta" href="#simulator">Run Simulator</a>
+
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M5 8h14M5 16h14" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow fade-up">MatchdayOS</p>
+        <h1 class="fade-up">Football campaigns, planned with less guesswork.</h1>
+        <p class="hero-copy fade-up">A compact planning system for GCC marketers to read football audiences and model media budgets before matchday demand peaks.</p>
+
+        <div class="hero-actions fade-up">
+          <a href="#audience" class="pill-button primary">View Audience Intelligence</a>
+          <a href="#simulator" class="pill-button secondary">Open Budget Simulator</a>
         </div>
-    </nav>
 
-    <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-6 py-16 space-y-32">
-
-        <!-- Hero Section -->
-        <header class="space-y-8 relative">
-            <div class="absolute inset-0 cyber-grid opacity-30 -z-10 rounded-3xl blur-[1px] pointer-events-none"></div>
-
-            <div
-                class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-900 bg-zinc-950 text-emerald-400 text-[10px] font-mono-custom tracking-wider">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Built from industry research, platform benchmarks, and real-world media planning experience.
+        <div class="product-strip fade-up" aria-label="Product modules">
+          <article class="strip-card">
+            <div class="icon-bubble" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+              </svg>
             </div>
-
-            <div class="max-w-4xl">
-                <h1 class="text-4xl md:text-6xl font-bold text-white tracking-tight leading-[1.15]">
-                    Most football campaigns start with assumptions.
-                </h1>
-                <p class="mt-6 text-base md:text-lg text-zinc-400 leading-relaxed font-light max-w-2xl">
-                    MatchdayOS helps marketers make better decisions using empirical audience intelligence, localized
-                    platform behavior, and programmatic media planning frameworks built specifically for MENA tournament
-                    cycles.
-                </p>
+            <h3>Audience Intelligence</h3>
+            <p>Market signals, platform affinity and fan behavior in one view.</p>
+          </article>
+          <article class="strip-card">
+            <div class="icon-bubble" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 6h16M4 12h16M4 18h10" />
+                <circle cx="15" cy="12" r="2.2" fill="currentColor" stroke="none" />
+              </svg>
             </div>
-
-            <div class="pt-2 flex items-center gap-4">
-                <a href="#simulator"
-                    class="px-5 py-3 bg-white text-black font-bold font-mono-custom text-[10px] uppercase tracking-wider rounded hover:bg-emerald-400 transition-all duration-300">
-                    Access Simulator
-                </a>
-                <a href="#founder-story"
-                    class="px-5 py-3 border border-zinc-800 text-zinc-350 font-bold font-mono-custom text-[10px] uppercase tracking-wider rounded hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-300">
-                    Why I Built MatchdayOS
-                </a>
+            <h3>Budget Simulator</h3>
+            <p>Estimate reach, impressions, CPM pressure and platform allocation.</p>
+          </article>
+          <article class="strip-card">
+            <div class="icon-bubble" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18M3 12h18" />
+                <circle cx="12" cy="12" r="7" />
+              </svg>
             </div>
-        </header>
-
-        <!-- Founder Story Section -->
-        <section id="founder-story" class="relative scroll-mt-24">
-            <div
-                class="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500/0 via-emerald-500/40 to-emerald-500/0">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
-                <div class="md:col-span-4 space-y-6 md:sticky md:top-24">
-                    <div>
-                        <h2
-                            class="text-[10px] font-bold text-emerald-500 uppercase font-mono-custom tracking-widest mb-2">
-                            Why I Built MatchdayOS</h2>
-                        <h3 class="text-2xl md:text-3xl font-bold text-white leading-tight">Bridging the gap between
-                            static plans and active audiences.</h3>
-                    </div>
-
-                    <div class="p-5 border border-zinc-900 bg-zinc-950 rounded-lg space-y-4 shadow-sm">
-                        <div class="flex items-center gap-3 border-b border-zinc-900 pb-3">
-                            <div
-                                class="w-12 h-12 film-grain-container border border-zinc-800 flex-shrink-0 bg-zinc-900 relative">
-                                <img src="https://i.postimg.cc/4dncbsNF/Untitled-design-(3).jpg" alt="Rinzi"
-                                    class="headshot-bw" loading="lazy" decoding="async"
-                                    onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-zinc-500 font-mono-custom text-base font-bold\'>R</div>';">
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-white">Rinzi</p>
-                                <p class="text-[9px] text-emerald-400 font-mono-custom uppercase tracking-wider">Digital
-                                    Media Lead @ Publicis Media Qatar</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span
-                                class="text-[8px] font-mono-custom bg-black text-zinc-450 px-2 py-0.5 rounded border border-zinc-900 uppercase">Media
-                                Systems Design</span>
-                            <span
-                                class="text-[8px] font-mono-custom bg-black text-zinc-450 px-2 py-0.5 rounded border border-zinc-900 uppercase">Audience
-                                Intelligence</span>
-                            <span
-                                class="text-[8px] font-mono-custom bg-black text-zinc-450 px-2 py-0.5 rounded border border-zinc-900 uppercase">Media
-                                Planning</span>
-                            <span
-                                class="text-[8px] font-mono-custom bg-black text-zinc-450 px-2 py-0.5 rounded border border-zinc-900 uppercase">Measurement
-                                & Optimization</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-8 space-y-6 text-zinc-400 font-light leading-relaxed text-sm md:text-base">
-                    <p
-                        class="text-emerald-400 font-medium border-l-2 border-emerald-500 pl-4 py-1 italic text-xs md:text-sm">
-                        "MatchdayOS was built by Rinzi to help marketers make smarter decisions around football
-                        audiences, media investments, and programmatic planning in MENA."
-                    </p>
-                    <p>
-                        After years of architecting and managing multi-million QAR media investments across retail,
-                        automotive, healthcare, and luxury brands (including market leaders like <strong
-                            class="text-white font-medium">McDonald's, Toyota, Lexus, GO Sport, the NBA Store</strong>,
-                        and so on...), I noticed a recurring, systemic problem every major football tournament cycle.
-                    </p>
-                    <p>
-                        Most media plans rely on generic, flat benchmarks pulled from historical spreadsheets. They
-                        treat a sports fan in Doha or Riyadh the exact same way they treat a fan in Cairo or Tunis. But
-                        football audiences are fundamentally different. Markets are structured differently. And
-                        crucially, live programmatic platforms behave completely differently under high-stress auction
-                        loads during a match.
-                    </p>
-                    <p>
-                        I built <strong class="text-white font-medium">MatchdayOS</strong> to be more than a calculator.
-                        It is a decision-support system designed to combine empirical audience intelligence, real-time
-                        programmatic planning frameworks, and rigorous media modeling.
-                    </p>
-                    <p>
-                        Because better outcomes don't come from larger budgets—they come from understanding how media
-                        systems interact.
-                    </p>
-
-                    <div class="mt-8 pt-6 border-t border-zinc-900">
-                        <h4 class="text-xs font-bold text-white uppercase font-mono-custom tracking-widest mb-4">Connect
-                            With Me</h4>
-                        <div class="flex flex-wrap items-center gap-4">
-                            <a href="https://www.linkedin.com/in/rinzi/" target="_blank" rel="noopener noreferrer"
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded hover:bg-zinc-900 hover:border-emerald-500 transition-colors group">
-                                <svg aria-hidden="true"
-                                    class="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                                </svg>
-                                <span
-                                    class="text-[10px] font-mono-custom text-zinc-300 uppercase tracking-wider">LinkedIn</span>
-                            </a>
-                            <a href="mailto:rinziyaseen@gmail.com"
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded hover:bg-zinc-900 hover:border-emerald-500 transition-colors group">
-                                <svg aria-hidden="true"
-                                    class="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                <span
-                                    class="text-[10px] font-mono-custom text-zinc-300 uppercase tracking-wider">Email</span>
-                            </a>
-                            <a href="https://wa.me/97471019573" target="_blank" rel="noopener noreferrer"
-                                class="flex items-center gap-2 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded hover:bg-zinc-900 hover:border-emerald-500 transition-colors group">
-                                <svg aria-hidden="true"
-                                    class="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                                </svg>
-                                <span
-                                    class="text-[10px] font-mono-custom text-zinc-300 uppercase tracking-wider">WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Audience Intelligence -->
-        <section id="intelligence" class="space-y-8 scroll-mt-24">
-            <div class="border-b border-zinc-900 pb-6">
-                <h2
-                    class="text-[10px] font-bold text-zinc-500 font-mono-custom uppercase tracking-widest flex items-center gap-2 mb-2">
-                    <span class="w-1.5 h-1.5 bg-emerald-500"></span> Phase 01
-                </h2>
-                <h3 class="text-2xl font-bold text-white">Audience Intelligence</h3>
-                <p class="text-xs md:text-sm text-zinc-400 mt-2 max-w-2xl">
-                    Understand how football fandom, market behavior, and platform preferences vary across MENA. Smarter
-                    campaigns start with better audience understanding.
-                </p>
-            </div>
-
-            <!-- Country Selector -->
-            <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar border-b border-zinc-900/50">
-                <button onclick="updateMarket('ksa')" id="btn-ksa"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-emerald-500 text-white bg-zinc-950">Saudi
-                    Arabia</button>
-                <button onclick="updateMarket('egypt')" id="btn-egypt"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-300">Egypt</button>
-                <button onclick="updateMarket('tunisia')" id="btn-tunisia"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-300">Tunisia</button>
-                <button onclick="updateMarket('qatar')" id="btn-qatar"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-300">Qatar</button>
-                <button onclick="updateMarket('uae')" id="btn-uae"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-300">UAE</button>
-                <button onclick="updateMarket('kuwait')" id="btn-kuwait"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-350">Kuwait</button>
-                <button onclick="updateMarket('oman')" id="btn-oman"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-350">Oman</button>
-                <button onclick="updateMarket('bahrain')" id="btn-bahrain"
-                    class="px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-350">Bahrain</button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Market Narrative Card -->
-                <div class="lg:col-span-8 glass-card p-8 flex flex-col justify-between">
-                    <div class="space-y-6">
-                        <div class="flex items-start justify-between flex-wrap gap-4">
-                            <div>
-                                <h4 id="m-name" class="text-xl font-bold text-white">Saudi Arabia</h4>
-                                <p id="m-badge"
-                                    class="text-[9px] font-mono-custom text-emerald-400 mt-2 uppercase tracking-widest bg-emerald-500/10 inline-block px-2.5 py-1 rounded">
-                                    High-Value Immersive Ecosystem</p>
-                            </div>
-                            <div class="text-right">
-                                <span
-                                    class="block text-[8px] font-mono-custom text-zinc-500 uppercase tracking-wider mb-1">Total
-                                    Active Audience</span>
-                                <span id="m-audience"
-                                    class="text-base font-bold text-white font-mono-custom">29.5M</span>
-                                <div class="mt-2 border-t border-zinc-800 pt-2">
-                                    <span
-                                        class="block text-[8px] font-mono-custom text-zinc-500 uppercase tracking-wider mb-1">Total
-                                        Population</span>
-                                    <span id="m-population"
-                                        class="text-xs font-bold text-zinc-400 font-mono-custom">35.3M</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p id="m-desc" class="text-zinc-350 leading-relaxed font-light text-sm">
-                            Saudi Arabia is a visual-first, high-conviction ecosystem. Traditional banner buys fail
-                            here. Success requires integrating directly into premium AR environments on Snapchat and
-                            active real-time micro-blogging arrays. You don't buy basic impressions; you buy presence in
-                            high-attention feeds.
-                        </p>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-zinc-900">
-                            <div>
-                                <span
-                                    class="text-[8px] text-zinc-500 uppercase font-mono-custom block tracking-wider mb-2 flex items-center gap-1.5"><svg
-                                        class="w-3.5 h-3.5 text-zinc-550" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                    </svg> Peak Behavioral Metric</span>
-                                <p id="m-peak-moment" class="text-xs text-zinc-400 leading-relaxed">Massive real-time
-                                    traffic consolidation; single tournament hashtags drive over 164,000 localized
-                                    timeline posts in under 24 hours.</p>
-                            </div>
-                            <div>
-                                <span
-                                    class="text-[8px] text-zinc-500 uppercase font-mono-custom block tracking-wider mb-2 flex items-center gap-1.5"><svg
-                                        class="w-3.5 h-3.5 text-emerald-500/70" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                        </path>
-                                    </svg> Strategic Approach</span>
-                                <p id="m-psych" class="text-xs text-emerald-400 leading-relaxed">Require high-end AR
-                                    immersive activations, creator-led TikTok presence, and real-time bid pacing.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Platform Distribution Chart -->
-                <div class="lg:col-span-4 glass-card p-6 flex flex-col justify-between">
-                    <h4 class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest font-mono-custom mb-4">
-                        Platform Affinity Matrix</h4>
-                    <div class="relative flex-grow min-h-[220px] w-full flex items-center justify-center">
-                        <canvas id="marketChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Campaign Simulator -->
-        <section id="simulator" class="space-y-8 scroll-mt-24">
-            <div class="border-b border-zinc-900 pb-6">
-                <h2
-                    class="text-[10px] font-bold text-zinc-500 font-mono-custom uppercase tracking-widest flex items-center gap-2 mb-2">
-                    <span class="w-1.5 h-1.5 bg-emerald-500"></span> Phase 02
-                </h2>
-                <h3 class="text-2xl font-bold text-white">Campaign Simulator</h3>
-                <p class="text-xs md:text-sm text-zinc-400 mt-2 max-w-2xl">
-                    Test investment scenarios, compare platform allocations, and explore how football audiences may
-                    respond across different campaign objectives before committing capital to DSPs.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-
-                <!-- Input Parameters Sidebar -->
-                <div class="xl:col-span-4 glass-card p-6 space-y-6">
-                    <div class="flex items-center justify-between border-b border-zinc-900 pb-4">
-                        <h4 class="text-[9px] font-bold text-white uppercase tracking-widest font-mono-custom">Engine
-                            Parameters</h4>
-                        <svg aria-hidden="true" class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4">
-                            </path>
-                        </svg>
-                    </div>
-
-                    <div class="space-y-5">
-                        <!-- Budget Input -->
-                        <div>
-                            <label for="p-custom-budget"
-                                class="block text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">Total
-                                Media Investment ($)</label>
-                            <div class="relative">
-                                <span
-                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-mono-custom text-xs">$</span>
-                                <input type="number" id="p-custom-budget" value="150000" min="5"
-                                    class="w-full bg-black border border-zinc-900 rounded px-8 py-3 text-xs text-white font-mono-custom focus:outline-none focus:border-emerald-500 transition-colors">
-                            </div>
-                        </div>
-
-                        <!-- Target Market Selector -->
-                        <div>
-                            <label for="p-planner-market"
-                                class="block text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">Target
-                                Audience Market</label>
-                            <select id="p-planner-market"
-                                class="w-full bg-black border border-zinc-900 rounded px-4 py-3 text-xs text-white font-mono-custom focus:outline-none focus:border-emerald-500 transition-colors appearance-none">
-                                <option value="ksa">Saudi Arabia</option>
-                                <option value="egypt">Egypt</option>
-                                <option value="tunisia">Tunisia</option>
-                                <option value="qatar">Qatar</option>
-                                <option value="uae">United Arab Emirates</option>
-                                <option value="kuwait">Kuwait</option>
-                                <option value="oman">Oman</option>
-                                <option value="bahrain">Bahrain</option>
-                            </select>
-                        </div>
-
-                        <!-- Campaign Objective Selection -->
-                        <div>
-                            <label for="p-planner-objective"
-                                class="block text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">Strategic
-                                Objective</label>
-                            <select id="p-planner-objective"
-                                class="w-full bg-black border border-zinc-900 rounded px-4 py-3 text-xs text-white font-mono-custom focus:outline-none focus:border-emerald-500 transition-colors appearance-none">
-                                <option value="awareness">Mass Awareness & Attention Capture</option>
-                                <option value="viral">Viral Content & Deep Engagement</option>
-                                <option value="conversion">Direct-Response / Acquisition</option>
-                                <option value="flashpoint">Real-Time Match Hijack (Intensity)</option>
-                            </select>
-                        </div>
-
-                        <!-- Delivery Pacing Strategy Dropdown -->
-                        <div>
-                            <label for="p-planner-pacing"
-                                class="block text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">Delivery
-                                Pacing Strategy</label>
-                            <select id="p-planner-pacing"
-                                class="w-full bg-black border border-zinc-900 rounded px-4 py-3 text-xs text-white font-mono-custom focus:outline-none focus:border-emerald-500 transition-colors appearance-none">
-                                <option value="standard">Standard (Even Pacing over Campaign window)</option>
-                                <option value="frontloaded">Frontloaded (Accelerate delivery early on)</option>
-                                <option value="accelerated">Accelerated (ASAP bidding; bids on every auction)</option>
-                            </select>
-                        </div>
-
-                        <!-- Campaign Duration Range Slider -->
-                        <div>
-                            <div
-                                class="flex justify-between text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">
-                                <label for="p-planner-duration">Campaign Window</label>
-                                <span class="text-white font-mono-custom" id="dur-val">30 Days</span>
-                            </div>
-                            <input type="range" id="p-planner-duration" min="7" max="90" value="30"
-                                oninput="document.getElementById('dur-val').innerText = this.value + ' Days'"
-                                class="w-full">
-                        </div>
-
-                        <!-- Frequency Cap Range Slider -->
-                        <div>
-                            <div
-                                class="flex justify-between text-[8px] font-mono-custom text-zinc-500 uppercase mb-2 tracking-wider">
-                                <label for="p-planner-frequency">Target Frequency Cap</label>
-                                <span class="text-white font-mono-custom" id="freq-val">3.5x</span>
-                            </div>
-                            <input type="range" id="p-planner-frequency" min="1.0" max="12.0" step="0.5" value="3.5"
-                                oninput="document.getElementById('freq-val').innerText = this.value + 'x'"
-                                class="w-full">
-                        </div>
-                    </div>
-
-                    <button onclick="executeSimulation()"
-                        class="w-full py-4 bg-white hover:bg-emerald-400 text-black font-bold text-[9px] rounded transition-all duration-300 font-mono-custom uppercase tracking-widest mt-4">
-                        Calculate Campaign Framework
-                    </button>
-                </div>
-
-                <!-- Simulation Output Panel -->
-                <div class="xl:col-span-8 flex flex-col gap-6">
-
-                    <!-- KPI Row -->
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="glass-card p-5" id="kpi-box-impressions">
-                            <span
-                                class="block text-[8px] text-zinc-500 font-mono-custom uppercase tracking-wider mb-2">Est.
-                                Impressions</span>
-                            <span id="calc-kpi-impressions"
-                                class="text-lg md:text-xl font-bold text-white font-mono-custom">-</span>
-                        </div>
-                        <div class="glass-card p-5 border-t-2 border-emerald-500" id="kpi-box-reach">
-                            <span
-                                class="block text-[8px] text-zinc-500 font-mono-custom uppercase tracking-wider mb-2">Unique
-                                Net Reach</span>
-                            <div class="flex items-baseline gap-2">
-                                <span id="calc-kpi-reach"
-                                    class="text-lg md:text-xl font-bold text-emerald-400 font-mono-custom">-</span>
-                                <span id="calc-kpi-reach-pct"
-                                    class="text-[10px] text-zinc-500 font-mono-custom hidden"></span>
-                            </div>
-                        </div>
-                        <div class="glass-card p-5" id="kpi-box-cpm">
-                            <span
-                                class="block text-[8px] text-zinc-500 font-mono-custom uppercase tracking-wider mb-2">Blended
-                                eCPM</span>
-                            <span id="calc-kpi-cpm"
-                                class="text-lg md:text-xl font-bold text-white font-mono-custom">-</span>
-                        </div>
-                    </div>
-
-                    <!-- Main Results Display Cards -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative min-h-[340px]">
-
-                        <!-- Initial Blank State Overlay -->
-                        <div id="welcome-state"
-                            class="absolute inset-0 z-20 glass-card flex flex-col items-center justify-center text-center p-8 bg-zinc-950/90">
-                            <svg aria-hidden="true" class="w-10 h-10 text-zinc-800 mb-4" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                </path>
-                            </svg>
-                            <h4
-                                class="text-[9px] font-bold text-zinc-500 font-mono-custom uppercase tracking-widest mb-2">
-                                Simulation Engine Idle</h4>
-                            <p class="text-xs text-zinc-400 max-w-sm">Configure parameters and execute to generate
-                                verified platform allocations and bidding estimates.</p>
-                        </div>
-
-                        <!-- Data Table Ledger -->
-                        <div class="lg:col-span-8 glass-card overflow-hidden flex flex-col">
-                            <div class="p-4 border-b border-zinc-900 bg-zinc-950">
-                                <h4 class="text-[9px] font-bold text-white font-mono-custom uppercase tracking-widest">
-                                    Programmatic Performance Ledger</h4>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left font-mono-custom whitespace-nowrap">
-                                    <thead>
-                                        <tr
-                                            class="text-[8px] text-zinc-500 uppercase tracking-wider border-b border-zinc-900 bg-black/50">
-                                            <th class="px-4 py-3 font-medium">Platform</th>
-                                            <th class="px-4 py-3 font-medium text-right">Investment</th>
-                                            <th class="px-4 py-3 font-medium text-right">eCPM</th>
-                                            <th class="px-4 py-3 font-medium text-right">Est. Reach</th>
-                                            <th class="px-4 py-3 font-medium text-right">Est. Clicks</th>
-                                            <th class="px-4 py-3 font-medium text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="calc-platform-rows" class="text-[11px] divide-y divide-zinc-900/50">
-                                        <!-- Javascript Populated -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Visual allocation canvas wrapper -->
-                        <div class="lg:col-span-4 glass-card flex flex-col p-4 relative min-h-[300px]">
-                            <h4 class="text-[9px] font-bold text-white font-mono-custom uppercase tracking-widest mb-4">
-                                Capital Allocation</h4>
-                            <div class="relative w-full flex-grow h-64">
-                                <canvas id="plannerChart" class="absolute inset-0"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Diagnostics Log Box -->
-                    <div id="diagnostics-log-box" class="glass-card p-5 bg-zinc-950/40 border-l-2 border-emerald-500">
-                        <div class="flex items-start gap-3">
-                            <svg aria-hidden="true" class="w-4 h-4 text-emerald-500 mt-0.5" id="diag-icon" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                            <div>
-                                <h4
-                                    class="text-[8px] font-bold text-zinc-500 font-mono-custom uppercase tracking-widest mb-1">
-                                    System Diagnostic Feed</h4>
-                                <p id="p-saturation-alert"
-                                    class="text-xs text-zinc-400 font-mono-custom leading-relaxed">Awaiting input
-                                    execution...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- The MatchdayOS Planning Framework -->
-        <section id="framework" class="space-y-8 scroll-mt-24">
-            <div class="border-b border-zinc-900 pb-6">
-                <h2
-                    class="text-[10px] font-bold text-zinc-500 font-mono-custom uppercase tracking-widest flex items-center gap-2 mb-2">
-                    <span class="w-1.5 h-1.5 bg-emerald-500"></span> Phase 03
-                </h2>
-                <h3 class="text-2xl font-bold text-white">The MatchdayOS Planning Framework</h3>
-                <p class="text-xs md:text-sm text-zinc-400 mt-2 max-w-2xl">
-                    Programmatic planning is not linear. Standard calculators assume pricing scales evenly. Real systems
-                    do not. This framework models two opposing market forces to deliver realistic expectations.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Force 1 -->
-                <div class="glass-card p-8 space-y-4">
-                    <h3
-                        class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono-custom flex items-center gap-3">
-                        <span
-                            class="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-[10px]">1</span>
-                        Force 1: Scale Efficiency
-                    </h3>
-                    <p class="text-xs md:text-sm text-zinc-400 font-light leading-relaxed">
-                        Larger investments unlock bulk purchasing power across DSP channels, reducing base
-                        cost-per-thousand (eCPM) levels as delivery models find ambient pricing avenues.
-                    </p>
-                    <div class="pt-4 border-t border-zinc-900 space-y-3">
-                        <div
-                            class="text-[9px] text-zinc-500 font-mono-custom py-2 px-3 bg-black border border-zinc-900 rounded">
-                            Scale_Discount = max(0.75, min(1.0, BudgetVolume ^ -0.05))
-                        </div>
-
-                        <!-- Real-World Example Card -->
-                        <div class="p-3 bg-zinc-950 rounded border border-zinc-900 space-y-2">
-                            <span
-                                class="text-[8px] font-bold text-zinc-500 font-mono-custom uppercase tracking-wider block">Real
-                                World Example: Scale Discount</span>
-                            <div class="grid grid-cols-2 gap-2 text-[10px]">
-                                <div>
-                                    <span class="text-zinc-600 block">At $10,000 Spend:</span>
-                                    <span class="text-white font-mono-custom">0% Discount (Base eCPM)</span>
-                                </div>
-                                <div>
-                                    <span class="text-zinc-600 block">At $200,000 Spend:</span>
-                                    <span class="text-emerald-400 font-mono-custom">21% CPM Savings (0.79x
-                                        Multiplier)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Force 2 -->
-                <div class="glass-card p-8 space-y-4">
-                    <h3
-                        class="text-xs font-bold text-white uppercase tracking-widest font-mono-custom flex items-center gap-3">
-                        <span
-                            class="w-6 h-6 rounded bg-zinc-900 flex items-center justify-center text-zinc-500 text-[10px]">2</span>
-                        Force 2: Saturation & Attention Decay
-                    </h3>
-                    <p class="text-xs md:text-sm text-zinc-400 font-light leading-relaxed">
-                        Forcing higher frequency targets over long windows leads to banner fatigue and bid-rate
-                        inflation because the DSP has to bid aggressively on restricted, same-user inventory auctions.
-                    </p>
-                    <div class="pt-4 border-t border-zinc-900 space-y-3">
-                        <div
-                            class="text-[9px] text-zinc-500 font-mono-custom py-2 px-3 bg-black border border-zinc-900 rounded">
-                            Fatigue_Premium = 1.0 + (0.08 * max(0, Freq - 1.0)) * Duration_Penalty
-                        </div>
-
-                        <!-- Real-World Example Card -->
-                        <div class="p-3 bg-zinc-950 rounded border border-zinc-900 space-y-2">
-                            <span
-                                class="text-[8px] font-bold text-zinc-500 font-mono-custom uppercase tracking-wider block">Real
-                                World Example: Fatigue Premium</span>
-                            <div class="grid grid-cols-2 gap-2 text-[10px]">
-                                <div>
-                                    <span class="text-zinc-600 block">At 1.5x Freq Cap:</span>
-                                    <span class="text-white font-mono-custom">Minor +4% Auction Premium</span>
-                                </div>
-                                <div>
-                                    <span class="text-zinc-600 block">At 10x Freq Cap:</span>
-                                    <span class="text-red-400 font-mono-custom">Extreme +72% Auction Markup</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Product Philosophy -->
-        <section class="glass-card p-12 md:p-20 text-center relative overflow-hidden mt-16 border border-zinc-900">
-            <div class="absolute inset-0 cyber-grid opacity-10"></div>
-
-            <div class="relative z-10 max-w-3xl mx-auto space-y-8">
-                <div
-                    class="inline-flex items-center justify-center p-3 bg-zinc-950 rounded-2xl border border-zinc-900 mb-2">
-                    <svg aria-hidden="true" class="w-6 h-6 text-zinc-500" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                        </path>
-                    </svg>
-                </div>
-
-                <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
-                    Media Planning Is a <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-sky-400">Systems
-                        Problem.</span>
-                </h2>
-
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 py-8 border-y border-zinc-900/50">
-                    <div class="space-y-2">
-                        <span class="block text-[8px] font-mono-custom text-zinc-600 uppercase tracking-widest">Node
-                            01</span>
-                        <p class="text-xs text-zinc-300 font-medium">Audience Behavior</p>
-                    </div>
-                    <div class="space-y-2">
-                        <span class="block text-[8px] font-mono-custom text-zinc-600 uppercase tracking-widest">Node
-                            02</span>
-                        <p class="text-xs text-zinc-300 font-medium">Platform Dynamics</p>
-                    </div>
-                    <div class="space-y-2">
-                        <span class="block text-[8px] font-mono-custom text-zinc-600 uppercase tracking-widest">Node
-                            03</span>
-                        <p class="text-xs text-zinc-300 font-medium">Creative Fatigue</p>
-                    </div>
-                    <div class="space-y-2">
-                        <span class="block text-[8px] font-mono-custom text-zinc-600 uppercase tracking-widest">Node
-                            04</span>
-                        <p class="text-xs text-zinc-300 font-medium">Auction Economics</p>
-                    </div>
-                    <div class="space-y-2 col-span-2 md:col-span-1">
-                        <span class="block text-[8px] font-mono-custom text-zinc-600 uppercase tracking-widest">Node
-                            05</span>
-                        <p class="text-xs text-zinc-300 font-medium">Measurement Quality</p>
-                    </div>
-                </div>
-
-                <p class="text-sm md:text-base text-zinc-400 font-light leading-relaxed max-w-2xl mx-auto">
-                    Every node influences campaign performance. MatchdayOS was built around the belief that better
-                    outcomes come from understanding how these systems interact.
-                </p>
-
-                <div class="pt-6">
-                    <button onclick="document.getElementById('simulator').scrollIntoView({behavior: 'smooth'})"
-                        class="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-bold font-mono-custom text-[10px] uppercase tracking-widest rounded hover:bg-emerald-400 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-                        Explore MatchdayOS
-                        <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-zinc-900 bg-black mt-20">
-        <div class="max-w-7xl mx-auto px-6 py-12 text-center space-y-4">
-            <div class="flex justify-center items-center gap-2 mb-2">
-                <div class="w-1 h-4 bg-emerald-500"></div>
-                <span class="text-sm font-bold tracking-widest text-white uppercase font-mono-custom">MatchdayOS</span>
-            </div>
-            <p class="text-[10px] text-zinc-500 font-mono-custom uppercase tracking-widest">
-                Football Audience Intelligence for MENA Marketers
-            </p>
-            <p class="text-[9px] text-zinc-600 font-mono-custom mt-4">
-                Built by Rinzi | Media Systems Architect<br>
-                Helping marketers make smarter decisions through audience intelligence, media planning, and programmatic
-                strategy.<br>
-                &copy; 2026 MatchdayOS. Moving beyond assumptions.
-            </p>
+            <h3>Matchday Results</h3>
+            <p>Turn inputs into practical recommendations for media teams.</p>
+          </article>
         </div>
-    </footer>
+      </div>
+    </section>
 
-    <script>
-        // Foundational Market Intelligence Data
-        const marketData = {
-            ksa: {
-                name: 'Saudi Arabia', badge: 'High-Value Immersive Ecosystem', audience: '29.5M Active', rawAudience: 29500000, tier: 'T1', totalPopulation: 35300000, popStr: '35.3M',
-                desc: 'Saudi Arabia is a visual-first, high-conviction ecosystem. Traditional banner buys fail here. Success requires integrating directly into premium AR environments on Snapchat and active real-time micro-blogging arrays. You don\'t buy basic impressions; you buy presence in high-attention feeds.',
-                peak: 'Massive real-time traffic consolidation; single tournament hashtags drive over 164,000 localized timeline posts in under 24 hours.',
-                psych: 'Require high-end AR immersive activations, creator-led TikTok presence, and real-time bid pacing.',
-                platforms: [25, 20, 18, 15, 12, 10], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            egypt: {
-                name: 'Egypt', badge: 'Creator-Led Community Hub', audience: '42.0M Active', rawAudience: 42000000, tier: 'T3', totalPopulation: 116500000, popStr: '116.5M',
-                desc: 'Egypt runs on peer-to-peer emotional engagement and creator-led tactical analysis. Broadcast viewership is massive, but the active digital conversation resides within deep, entrenched Facebook groups and highly vocal YouTube football analysts.',
-                peak: 'Peak tournament periods drive over 1.3 million engagements per hour heavily polarized around domestic club loyalties.',
-                psych: 'Brands must leverage self-deprecating community humor and sponsor macro-influencers rather than running flat corporate manifestos.',
-                platforms: [5, 25, 8, 12, 15, 35], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            tunisia: {
-                name: 'Tunisia', badge: 'Dense Grassroot Networks', audience: '8.2M Active', rawAudience: 8200000, tier: 'T3', totalPopulation: 12300000, popStr: '12.3M',
-                desc: 'Tunisia maintains incredibly dense social structures, recording the highest median Facebook friend overlap in the MENA region. Fandom here is highly analytical, utilizing direct-to-consumer OTT streaming platforms alongside grassroots peer debates.',
-                peak: 'Unprecedented volume of localized digital debate; peer networks activate simultaneously to parse tactical decisions.',
-                psych: 'Digital strategy requires heavy Facebook referral optimization and targeting tactical, mobile-first video streamers.',
-                platforms: [4, 20, 6, 15, 10, 45], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            qatar: {
-                name: 'Qatar', badge: 'Premium Broadcasting Hub', audience: '2.6M Active', rawAudience: 2600000, tier: 'T2', totalPopulation: 3050000, popStr: '3.05M',
-                desc: 'Qatar represents the heart of regional premium sports broadcasting. Audiences exist in a highly connected, dual-screen paradigm, engaging intimately with YouTube highlights and X/Twitter debates while maintaining high baseline purchasing power.',
-                peak: 'Match events drive exceptionally high multi-screen engagement across X and premium OTT digital environments.',
-                psych: 'Campaigns must meet luxury standard expectations with high-fidelity creative formatting across premium social tiers.',
-                platforms: [15, 25, 20, 12, 18, 10], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            uae: {
-                name: 'United Arab Emirates', badge: 'Cosmopolitan Multi-Screen Market', audience: '9.3M Active', rawAudience: 9300000, tier: 'T1', totalPopulation: 11300000, popStr: '11.3M',
-                desc: 'A diverse, affluent expatriate and citizen population creates a complex media puzzle. Instagram functions as a premium lifestyle hub, while TikTok and Snapchat serve vast segments of the diverse younger demographic searching for fast entertainment.',
-                peak: 'Upwards of 83% of fans actively browse secondary mobile applications concurrently during high-stakes broadcast moments.',
-                psych: 'Demands highly polished, cross-cultural multi-platform planning with heavy allocations toward visual discovery.',
-                platforms: [15, 20, 15, 18, 22, 10], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            kuwait: {
-                name: 'Kuwait', badge: 'Analytical Conversationalists', audience: '4.1M Active', rawAudience: 4100000, tier: 'T2', totalPopulation: 4930000, popStr: '4.93M',
-                desc: 'Kuwaiti football audiences are highly vocal and analytical. They index strongly toward detailed tactical YouTube creator content and rapid-fire X/Twitter sports spaces to dissect regional and international fixtures.',
-                peak: 'Heavy sustained conversation post-match rather than strictly in-game reaction intervals.',
-                psych: 'Planners should deploy long-form tactical video campaigns and sponsor local sports debate formats.',
-                platforms: [12, 25, 20, 15, 18, 10], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            oman: {
-                name: 'Oman', badge: 'Traditional Digital Integration', audience: '3.8M Active', rawAudience: 3800000, tier: 'T2', totalPopulation: 5280000, popStr: '5.28M',
-                desc: 'Omani engagement blends highly cohesive community structures with rapid digital adoption. Facebook and specialized WhatsApp networking run alongside heavy YouTube consumption for sports highlights.',
-                peak: 'Massive utilization of dark-social sharing (direct messaging) during live regional tourneys.',
-                psych: 'Campaigns excel when designed for community-sharing loops and direct peer-to-peer validation.',
-                platforms: [6, 22, 10, 12, 15, 35], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            },
-            bahrain: {
-                name: 'Bahrain', badge: 'Concentrated Digital Prestige', audience: '1.4M Active', rawAudience: 1400000, tier: 'T2', totalPopulation: 1610000, popStr: '1.61M',
-                desc: 'A closely knit audience pool where trends rapidly saturate the market. Visual platforms like Instagram and YouTube capture the majority of attention, requiring sharp, localized creative rotations to avoid wear-out.',
-                peak: 'Instantaneous trend adoption during national team fixtures sweeping the entire active platform user base.',
-                psych: 'Highly responsive to localized influencer alignments and rapid, high-impact visual buys.',
-                platforms: [15, 20, 18, 15, 22, 10], labels: ['Snapchat', 'YouTube', 'X (Twitter)', 'TikTok', 'Instagram', 'Facebook']
-            }
+    <section class="audience" id="audience">
+      <div class="container">
+        <div class="section-head fade-up">
+          <div>
+            <p class="section-kicker">Audience Intelligence</p>
+            <h2>Pick the market.<br>Read the moment.</h2>
+          </div>
+          <p>Fast signals for planners who need the campaign direction before the full deck.</p>
+        </div>
+
+        <div class="audience-board fade-up">
+          <div class="market-list" aria-label="Market selector">
+            <button class="market-btn active" type="button" data-market="saudi"><span class="market-name"><strong>Saudi Arabia</strong><span>Mass reach market</span></span><span class="market-score">High</span></button>
+            <button class="market-btn" type="button" data-market="qatar"><span class="market-name"><strong>Qatar</strong><span>Premium local attention</span></span><span class="market-score">Sharp</span></button>
+            <button class="market-btn" type="button" data-market="uae"><span class="market-name"><strong>UAE</strong><span>Multi-community fan base</span></span><span class="market-score">Broad</span></button>
+            <button class="market-btn" type="button" data-market="kuwait"><span class="market-name"><strong>Kuwait</strong><span>Social-first demand</span></span><span class="market-score">Social</span></button>
+            <button class="market-btn" type="button" data-market="oman"><span class="market-name"><strong>Oman</strong><span>Efficient reach</span></span><span class="market-score">Lean</span></button>
+            <button class="market-btn" type="button" data-market="bahrain"><span class="market-name"><strong>Bahrain</strong><span>Compact audience pool</span></span><span class="market-score">Niche</span></button>
+            <button class="market-btn" type="button" data-market="egypt"><span class="market-name"><strong>Egypt</strong><span>Scale and passion</span></span><span class="market-score">Scale</span></button>
+            <button class="market-btn" type="button" data-market="tunisia"><span class="market-name"><strong>Tunisia</strong><span>Community-led moments</span></span><span class="market-score">Live</span></button>
+          </div>
+
+          <div class="audience-panel" aria-live="polite">
+            <div class="panel-top">
+              <div>
+                <h3 id="marketTitle">Saudi Arabia</h3>
+                <p id="marketSummary">Scale-led football attention with strong short-form video, social search and creator-led discovery around big fixtures.</p>
+              </div>
+              <div class="large-number">
+                <strong id="marketAudience">18.4M</strong>
+                <span>addressable fans</span>
+              </div>
+            </div>
+
+            <div class="signal-grid">
+              <div class="signal">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M12 13l4-5"/><path d="M5 19h14"/></svg>
+                <strong id="signalOne">High Attention</strong>
+                <span>Peak demand clusters around pre-match and final whistle windows.</span>
+              </div>
+              <div class="signal">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 18h4"/></svg>
+                <strong id="signalTwo">Social Video</strong>
+                <span>Use vertical video, creator cuts and snackable matchday hooks.</span>
+              </div>
+              <div class="signal">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-4.5 7-11a7 7 0 0 0-14 0c0 6.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                <strong id="signalThree">Geo Windows</strong>
+                <span>Build retargeting around fan zones, malls and viewing areas.</span>
+              </div>
+              <div class="signal">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+                <strong id="signalFour">Action Bias</strong>
+                <span>Shift budget toward high-intent matchday pulses.</span>
+              </div>
+            </div>
+
+            <div class="tags" id="marketTags">
+              <span class="tag">Short-form video</span><span class="tag">Creator-led</span><span class="tag">Search lift</span><span class="tag">Retargeting pool</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="simulator" id="simulator">
+      <div class="container">
+        <div class="section-head fade-up">
+          <div>
+            <p class="section-kicker">Budget Simulator</p>
+            <h2>Model the plan.<br>See the pressure.</h2>
+          </div>
+          <p>Adjust budget, market, duration, frequency and pacing. Outputs refresh instantly with reach, impressions and allocation logic.</p>
+        </div>
+
+        <div class="sim-grid fade-up">
+          <div class="control-card">
+            <div class="field">
+              <div class="field-head"><label for="budgetRange">Investment</label><span class="value-pill" id="budgetLabel">$75,000</span></div>
+              <input id="budgetRange" type="range" min="10000" max="300000" step="5000" value="75000" />
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="marketSelect">Market</label><span class="value-pill">GCC/MENA</span></div>
+              <div class="select-wrap">
+                <select id="marketSelect">
+                  <option value="saudi">Saudi Arabia</option>
+                  <option value="qatar">Qatar</option>
+                  <option value="uae">UAE</option>
+                  <option value="kuwait">Kuwait</option>
+                  <option value="oman">Oman</option>
+                  <option value="bahrain">Bahrain</option>
+                  <option value="egypt">Egypt</option>
+                  <option value="tunisia">Tunisia</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="objectiveSelect">Objective</label><span class="value-pill">Media goal</span></div>
+              <div class="select-wrap">
+                <select id="objectiveSelect">
+                  <option value="reach">Mass Reach</option>
+                  <option value="engagement">Live Engagement</option>
+                  <option value="traffic">Traffic & Search Lift</option>
+                  <option value="retargeting">Retargeting Pool</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><span>Pacing</span><span class="value-pill" id="pacingLabel">Balanced</span></div>
+              <div class="segmented" role="group" aria-label="Pacing selector">
+                <button class="seg-btn" type="button" data-pacing="steady">Steady</button>
+                <button class="seg-btn active" type="button" data-pacing="balanced">Balanced</button>
+                <button class="seg-btn" type="button" data-pacing="burst">Burst</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="durationRange">Duration</label><span class="value-pill" id="durationLabel">14 days</span></div>
+              <input id="durationRange" type="range" min="3" max="30" step="1" value="14" />
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="frequencyRange">Frequency cap</label><span class="value-pill" id="frequencyLabel">4.0</span></div>
+              <input id="frequencyRange" type="range" min="1" max="8" step="0.5" value="4" />
+            </div>
+          </div>
+
+          <div class="result-card" aria-live="polite">
+            <div class="results-head">
+              <div>
+                <h3>Campaign output</h3>
+                <p>Estimated framework based on market pressure, objective and pacing.</p>
+              </div>
+              <div class="status-dot" id="statusLabel">Balanced</div>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric"><span>Impressions</span><strong id="impressionsOut">18.8M</strong></div>
+              <div class="metric"><span>Unique reach</span><strong id="reachOut">4.7M</strong><em id="reachPctOut">13.3% of population</em></div>
+              <div class="metric"><span>Blended CPM</span><strong id="cpmOut">$4.00</strong></div>
+              <div class="metric"><span>Clicks / visits</span><strong id="clicksOut">47K</strong></div>
+            </div>
+
+            <div class="platforms">
+              <div class="platforms-title"><span>Recommended budget split</span><span id="primaryChannel">Video-led</span></div>
+              <div class="split-row"><span id="labelOne">TikTok</span><div class="bar"><i id="barOne"></i></div><span id="pctOne">34%</span></div>
+              <div class="split-row"><span id="labelTwo">Meta</span><div class="bar"><i id="barTwo"></i></div><span id="pctTwo">28%</span></div>
+              <div class="split-row"><span id="labelThree">YouTube</span><div class="bar"><i id="barThree"></i></div><span id="pctThree">22%</span></div>
+              <div class="split-row"><span id="labelFour">Programmatic</span><div class="bar"><i id="barFour"></i></div><span id="pctFour">16%</span></div>
+            </div>
+
+            <div class="diagnostic" id="diagnosticOut"><strong>Recommendation:</strong> Use balanced pacing with higher video weight in the first 72 hours, then retarget engaged users around fixture windows.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="framework" id="framework">
+      <div class="container">
+        <div class="section-head fade-up">
+          <div>
+            <p class="section-kicker">Planning Framework</p>
+            <h2>Five checks before launch.</h2>
+          </div>
+          <p>Keep the website light. Put the deeper explanation in the LinkedIn caption or sales note.</p>
+        </div>
+
+        <div class="framework-grid fade-up">
+          <article class="framework-card">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <strong>Audience</strong><span>Who is active when the fixture matters?</span>
+          </article>
+          <article class="framework-card">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+            <strong>Budget</strong><span>Where does money create the least waste?</span>
+          </article>
+          <article class="framework-card">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="8"/></svg>
+            <strong>Timing</strong><span>Which windows deserve heavier media pressure?</span>
+          </article>
+          <article class="framework-card">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 8h10M7 12h7M7 16h4"/></svg>
+            <strong>Creative</strong><span>How quickly will matchday content fatigue?</span>
+          </article>
+          <article class="framework-card">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-7"/></svg>
+            <strong>Measure</strong><span>What should be proven after the match?</span>
+          </article>
+        </div>
+
+        <div class="closing fade-up">
+          <div>
+            <h2>Less deck. More decision.</h2>
+            <p>Use MatchdayOS as the first planning screen before campaign setup.</p>
+          </div>
+          <a href="#simulator" class="pill-button primary">Run Simulator</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <footer class="site-footer" aria-label="Footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><span class="footer-mark" aria-hidden="true">⚽</span> MatchdayOS</div>
+      <div>© 2026 MatchdayOS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    /* -----------------------------------------------------------
+       MatchdayOS jQuery layer
+       Preserved/improved behavior:
+       - Smooth scroll navigation
+       - Mobile menu toggle
+       - Audience market tabs
+       - Budget simulator inputs
+       - Campaign output calculations
+       - Platform split and diagnostic recommendation
+    ----------------------------------------------------------- */
+
+    $(function () {
+      const marketData = {
+        saudi: {
+          title: "Saudi Arabia",
+          audience: "18.4M",
+          population: 35300280,
+          summary: "Scale-led football attention with strong short-form video, social search and creator-led discovery around big fixtures.",
+          tags: ["Short-form video", "Creator-led", "Search lift", "Retargeting pool"],
+          signals: ["High Attention", "Social Video", "Geo Windows", "Action Bias"],
+          cpm: 4.0,
+          fanBase: 18400000,
+          ctr: 0.0025,
+          pressure: 1.12,
+          maxReachShare: 0.74
+        },
+        qatar: {
+          title: "Qatar",
+          audience: "1.9M",
+          population: 2857822,
+          summary: "Compact premium attention around malls, fan zones, hospitality venues and high-value urban screens.",
+          tags: ["Premium reach", "Malls", "Fan zones", "DOOH retargeting"],
+          signals: ["Premium Reach", "Location Led", "High Intent", "Retargeting"],
+          cpm: 5.2,
+          fanBase: 1900000,
+          ctr: 0.0022,
+          pressure: 1.18,
+          maxReachShare: 0.72
+        },
+        uae: {
+          title: "UAE",
+          audience: "7.8M",
+          population: 10986400,
+          summary: "Diverse football communities with strong premium video, creator content, search and retail-triggered intent.",
+          tags: ["Multi-community", "Premium video", "Retail", "Search"],
+          signals: ["Broad Reach", "Premium Video", "Retail Lift", "Search Intent"],
+          cpm: 5.8,
+          fanBase: 7800000,
+          ctr: 0.0024,
+          pressure: 1.2,
+          maxReachShare: 0.70
+        },
+        kuwait: {
+          title: "Kuwait",
+          audience: "2.7M",
+          population: 4897263,
+          summary: "Social-first football attention with strong mobile usage, creator resonance and compact reach planning.",
+          tags: ["Social-first", "Mobile video", "Creators", "Compact reach"],
+          signals: ["Social First", "Mobile Heavy", "Creator Fit", "Fast Reach"],
+          cpm: 4.6,
+          fanBase: 2700000,
+          ctr: 0.0023,
+          pressure: 1.08,
+          maxReachShare: 0.73
+        },
+        oman: {
+          title: "Oman",
+          audience: "2.5M",
+          population: 5281538,
+          summary: "Efficient football reach market where steady pacing and frequency control can work harder.",
+          tags: ["Efficient CPM", "Steady reach", "Frequency", "Value market"],
+          signals: ["Efficient Reach", "Steady Pace", "Value CPM", "Frequency"],
+          cpm: 3.6,
+          fanBase: 2500000,
+          ctr: 0.0021,
+          pressure: 1.02,
+          maxReachShare: 0.72
+        },
+        bahrain: {
+          title: "Bahrain",
+          audience: "780K",
+          population: 1588670,
+          summary: "Small but useful audience pool for sharp targeting, retail, venue and retargeting-led activations.",
+          tags: ["Niche reach", "Retail", "Venues", "Retargeting"],
+          signals: ["Niche Pool", "Retail Fit", "Venue Led", "Retarget"],
+          cpm: 4.8,
+          fanBase: 780000,
+          ctr: 0.0022,
+          pressure: 1.06,
+          maxReachShare: 0.72
+        },
+        egypt: {
+          title: "Egypt",
+          audience: "46.5M",
+          population: 116538258,
+          summary: "Massive football passion market with strong social conversation, live commentary and cost-efficient scale.",
+          tags: ["Mass scale", "Conversation", "Live moments", "Efficient reach"],
+          signals: ["Mass Scale", "Live Talk", "High Passion", "Value Reach"],
+          cpm: 2.4,
+          fanBase: 46500000,
+          ctr: 0.0026,
+          pressure: 1.1,
+          maxReachShare: 0.76
+        },
+        tunisia: {
+          title: "Tunisia",
+          audience: "5.3M",
+          population: 12277109,
+          summary: "Community-driven football attention with sharp live-match spikes and strong discussion-led discovery.",
+          tags: ["Community", "Live spikes", "Discussion", "Social"],
+          signals: ["Community", "Live Spike", "Discussion", "Social Lift"],
+          cpm: 2.9,
+          fanBase: 5300000,
+          ctr: 0.0024,
+          pressure: 1.04,
+          maxReachShare: 0.73
+        }
+      };
+
+      const objectiveData = {
+        reach: {
+          cpmFactor: 0.92,
+          ctrFactor: 0.82,
+          split: { TikTok: 30, Meta: 26, YouTube: 28, Programmatic: 16 },
+          primary: "Reach-led"
+        },
+        engagement: {
+          cpmFactor: 1.08,
+          ctrFactor: 1.18,
+          split: { TikTok: 38, Meta: 30, YouTube: 18, Programmatic: 14 },
+          primary: "Video-led"
+        },
+        traffic: {
+          cpmFactor: 1.0,
+          ctrFactor: 1.38,
+          split: { Meta: 30, TikTok: 26, YouTube: 16, Search: 28 },
+          primary: "Traffic-led"
+        },
+        retargeting: {
+          cpmFactor: 1.15,
+          ctrFactor: 1.28,
+          split: { Meta: 34, TikTok: 24, Programmatic: 24, YouTube: 18 },
+          primary: "Retargeting-led"
+        }
+      };
+
+      const pacingData = {
+        steady: { label: "Steady", factor: 0.95, reachFactor: 1.08, note: "Steady pacing keeps CPM pressure controlled and supports safer frequency management." },
+        balanced: { label: "Balanced", factor: 1.0, reachFactor: 1.0, note: "Balanced pacing gives enough launch weight while keeping room for live fixture shifts." },
+        burst: { label: "Burst", factor: 1.22, reachFactor: 0.86, note: "Burst pacing increases auction pressure, but works well for opening matches and knockout moments." }
+      };
+
+      let currentPacing = "balanced";
+
+      function formatMoney(value) {
+        return "$" + Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
+      function compactNumber(value) {
+        if (value >= 1000000) return (value / 1000000).toFixed(value >= 10000000 ? 1 : 2).replace(/\.0$/, "") + "M";
+        if (value >= 1000) return Math.round(value / 1000).toLocaleString("en-US") + "K";
+        return Math.round(value).toLocaleString("en-US");
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function updateMarketPanel(marketKey) {
+        const data = marketData[marketKey];
+        if (!data) return;
+
+        $("#marketTitle").text(data.title);
+        $("#marketAudience").text(data.audience);
+        $("#marketSummary").text(data.summary);
+        $("#signalOne").text(data.signals[0]);
+        $("#signalTwo").text(data.signals[1]);
+        $("#signalThree").text(data.signals[2]);
+        $("#signalFour").text(data.signals[3]);
+
+        const tagHtml = data.tags.map(tag => `<span class="tag">${tag}</span>`).join("");
+        $("#marketTags").html(tagHtml);
+      }
+
+      /* -----------------------------------------------------------
+         Real-time simulator calculation logic
+         The simulator updates instantly on every input change.
+
+         Logic model:
+         1. Begin with each market's baseline CPM.
+         2. Adjust CPM by objective, pacing, market pressure, campaign length,
+            daily budget pressure, and high-frequency inefficiency.
+         3. Estimate impressions from investment / adjusted CPM.
+         4. Estimate unique reach from impressions / effective frequency.
+         5. Expand reach gradually as duration increases, because longer flights
+            create more opportunities to find new users.
+         6. Cap unique reach by the available football audience pool.
+         7. Show unique reach as a percentage of total market population.
+
+         Population basis: latest available World Bank 2024 population totals.
+      ----------------------------------------------------------- */
+      function calculateSimulator() {
+        const safeClamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+        const budget = Math.max(Number($("#budgetRange").val()) || 0, 0);
+        const marketKey = $("#marketSelect").val() || "saudi";
+        const objectiveKey = $("#objectiveSelect").val() || "reach";
+        const duration = Math.max(Number($("#durationRange").val()) || 1, 1);
+        const frequency = Math.max(Number($("#frequencyRange").val()) || 1, 1);
+
+        const market = marketData[marketKey] || marketData.saudi;
+        const objective = objectiveData[objectiveKey] || objectiveData.reach;
+        const pacing = pacingData[currentPacing] || pacingData.balanced;
+
+        const marketCaps = {
+          saudi: 26000000,
+          qatar: 1370000,
+          uae: 7500000,
+          kuwait: 3200000,
+          oman: 2700000,
+          bahrain: 1100000,
+          egypt: 40000000,
+          tunisia: 6000000
         };
 
-        // Real-world performance CPM/CPC platform matrix (Calibrated to reflect real Qatar/regional benchmarks)
-        const regionalAdCosts = {
-            'T1': {
-                'Snapchat': { cpm: 4.50, cpc: 0.35, color: '#FFFC00' },
-                'YouTube': { cpm: 7.50, cpc: 0.65, color: '#FF0500' },
-                'X (Twitter)': { cpm: 6.50, cpc: 0.55, color: '#1DA1F2' },
-                'TikTok': { cpm: 2.20, cpc: 0.28, color: '#00F2FE' },
-                'Instagram': { cpm: 3.50, cpc: 0.45, color: '#E1306C' },
-                'Facebook': { cpm: 1.80, cpc: 0.22, color: '#1877F2' }
-            },
-            'T2': {
-                'Snapchat': { cpm: 3.00, cpc: 0.22, color: '#FFFC00' },
-                'YouTube': { cpm: 6.50, cpc: 0.55, color: '#FF0500' },
-                'X (Twitter)': { cpm: 4.50, cpc: 0.40, color: '#1DA1F2' },
-                'TikTok': { cpm: 1.30, cpc: 0.18, color: '#00F2FE' },
-                'Instagram': { cpm: 2.20, cpc: 0.30, color: '#E1306C' },
-                'Facebook': { cpm: 1.20, cpc: 0.15, color: '#1877F2' }
-            },
-            'T3': {
-                'Snapchat': { cpm: 1.20, cpc: 0.10, color: '#FFFC00' },
-                'YouTube': { cpm: 2.80, cpc: 0.25, color: '#FF0500' },
-                'X (Twitter)': { cpm: 2.20, cpc: 0.20, color: '#1DA1F2' },
-                'TikTok': { cpm: 0.70, cpc: 0.08, color: '#00F2FE' },
-                'Instagram': { cpm: 1.10, cpc: 0.14, color: '#E1306C' },
-                'Facebook': { cpm: 0.60, cpc: 0.07, color: '#1877F2' }
-            }
+        const maxReach = marketCaps[marketKey] || marketCaps.saudi;
+        const totalPopulation = Math.max(market.population || maxReach, 100);
+        const dailyBudget = budget / Math.max(duration, 1);
+
+        /* -----------------------------------------------------------
+           Simulator logic: Logistic S-Curve reach model
+
+           - Impressions respond to budget, market CPM, objective, pacing,
+             duration, daily spend pressure, and frequency pressure.
+           - Reach is no longer linear. It follows a Hill/Logistic S-Curve:
+             Reach = (MaxReach * BurnoutFactor) / (1 + exp(-k * (Budget - Midpoint)))
+           - Every market has a hard reach ceiling via marketCaps.
+           - As reach approaches saturation, extra spend primarily increases
+             frequency rather than unique reach.
+           - Safety guards prevent division-by-zero, NaN, and Infinity values.
+        ----------------------------------------------------------- */
+
+        const pacingCpmFactor = currentPacing === "burst" ? 1.18 : currentPacing === "steady" ? 0.96 : 1.04;
+        const durationCpmFactor = safeClamp(1.16 - duration * 0.007, 0.92, 1.16);
+        const dailyPressureFactor = safeClamp(Math.pow(Math.max(dailyBudget, 100) / 8500, 0.08), 0.86, 1.24);
+        const frequencyCpmFactor = frequency > 4 ? 1 + (frequency - 4) * 0.035 : 0.98;
+
+        const baseCpm =
+          (market.cpm || 4.5) *
+          (objective.cpmFactor || 1) *
+          (market.pressure || 1) *
+          pacingCpmFactor *
+          durationCpmFactor *
+          dailyPressureFactor *
+          frequencyCpmFactor;
+
+        const cpm = Math.max(baseCpm, 0.1);
+        const impressions = Math.max((budget / Math.max(cpm, 0.1)) * 1000, 0);
+
+        const pacingReachFactor = currentPacing === "burst" ? 0.86 : currentPacing === "steady" ? 1.08 : 1;
+        const durationReachFactor = safeClamp(0.72 + Math.log(duration + 1) / Math.log(31) * 0.46, 0.78, 1.18);
+        const frequencyBurnout = safeClamp(1 - Math.max(frequency - 3.5, 0) * 0.055, 0.62, 1);
+        const pacingBurnout = currentPacing === "burst" ? 0.92 : 1;
+        const burnoutFactor = safeClamp(durationReachFactor * frequencyBurnout * pacingReachFactor * pacingBurnout, 0.45, 1);
+
+        const marketMidpoints = {
+          saudi: 145000,
+          qatar: 23000,
+          uae: 76000,
+          kuwait: 38000,
+          oman: 34000,
+          bahrain: 18000,
+          egypt: 210000,
+          tunisia: 52000
         };
 
-        let currentMarketChart = null;
-        let currentAllocationChart = null;
+        const midpoint = marketMidpoints[marketKey] || 65000;
+        const k = 0.000028;
 
-        function initMarketChart(marketKey) {
-            const ctx = document.getElementById('marketChart').getContext('2d');
-            const data = marketData[marketKey];
+        const logisticReach = (maxReach * burnoutFactor) / (1 + Math.exp(-k * (budget - midpoint)));
+        const frequencyReachLimit = impressions / Math.max(frequency, 1);
+        const reach = Math.max(Math.min(logisticReach, frequencyReachLimit, maxReach), 0);
 
-            if (currentMarketChart) {
-                currentMarketChart.destroy();
-            }
+        const safeImpressionDenominator = Math.max(impressions, 100);
+        const calculatedCpm = (budget / safeImpressionDenominator) * 1000;
+        const clicks = Math.max(impressions * (market.ctr || 0.0025) * (objective.ctrFactor || 1), 0);
+        const reachPctOfPopulation = (reach / Math.max(totalPopulation, 100)) * 100;
+        const saturationRatio = reach / Math.max(maxReach, 100);
 
-            Chart.defaults.color = '#71717a';
-            Chart.defaults.font.family = "'JetBrains Mono', monospace";
+        $("#budgetLabel").text(formatMoney(budget));
+        $("#durationLabel").text(duration + (duration === 1 ? " day" : " days"));
+        $("#frequencyLabel").text(frequency.toFixed(1));
+        $("#pacingLabel").text(pacing.label);
 
-            currentMarketChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        data: data.platforms,
-                        backgroundColor: ['#FFFC00', '#FF0500', '#1DA1F2', '#00F2FE', '#E1306C', '#1877F2'],
-                        borderWidth: 1,
-                        borderColor: '#050508',
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right', labels: { boxWidth: 10, padding: 12, font: { size: 9 } } }
-                    },
-                    cutout: '75%'
-                }
-            });
+        $("#impressionsOut").text(compactNumber(impressions));
+        $("#reachOut").text(compactNumber(reach));
+        $("#reachPctOut").text(reachPctOfPopulation.toFixed(reachPctOfPopulation >= 10 ? 1 : 2) + "% of population");
+        $("#cpmOut").text("$" + calculatedCpm.toFixed(2));
+        $("#clicksOut").text(compactNumber(clicks));
+        $("#statusLabel").text(pacing.label);
+        $("#primaryChannel").text(objective.primary);
+
+        const entries = Object.entries(objective.split || {});
+        const labels = ["#labelOne", "#labelTwo", "#labelThree", "#labelFour"];
+        const bars = ["#barOne", "#barTwo", "#barThree", "#barFour"];
+        const pcts = ["#pctOne", "#pctTwo", "#pctThree", "#pctFour"];
+
+        entries.slice(0, 4).forEach((entry, index) => {
+          $(labels[index]).text(entry[0]);
+          $(bars[index]).css("width", entry[1] + "%");
+          $(pcts[index]).text(entry[1] + "%");
+        });
+
+        let diagnosticMessage = `<strong>Live recommendation:</strong> ${pacing.note} Use ${objective.primary.toLowerCase()} allocation for ${market.title}. Estimated unique reach is ${reachPctOfPopulation.toFixed(1)}% of the total population.`;
+
+        if (saturationRatio > 0.85) {
+          diagnosticMessage = `<strong>Warning:</strong> You are reaching ${(saturationRatio * 100).toFixed(0)}% of the available market ceiling. Extra spend is now increasing frequency rather than unique reach. Consider widening the audience, extending duration, or reallocating budget into retargeting and sequential creative.`;
+        } else if (frequency > 6) {
+          diagnosticMessage += " Frequency is high, so rotate creative faster to avoid fatigue.";
+        } else if (currentPacing === "burst") {
+          diagnosticMessage += " Burst pacing may increase CPM during marquee fixtures.";
+        } else if (duration < 7) {
+          diagnosticMessage += " Short campaign duration may limit deduplicated reach.";
         }
 
-        function updateMarket(marketKey) {
-            const data = marketData[marketKey];
-            document.getElementById('m-name').innerText = data.name;
-            document.getElementById('m-badge').innerText = data.badge;
-            document.getElementById('m-audience').innerText = data.audience;
-            document.getElementById('m-population').innerText = data.popStr;
-            document.getElementById('m-desc').innerText = data.desc;
-            document.getElementById('m-peak-moment').innerText = data.peak;
-            document.getElementById('m-psych').innerText = data.psych;
+        $("#diagnosticOut").html(diagnosticMessage);
+      }
 
-            // Reset tab styling
-            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
-                btn.className = "px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-transparent text-zinc-500 hover:text-zinc-350";
-            });
-            // Activate selected tab
-            document.getElementById(`btn-${marketKey}`).className = "px-4 py-2 font-mono-custom text-[9px] uppercase tracking-wider whitespace-nowrap transition-all border-b-2 border-emerald-500 text-white bg-zinc-950";
+      $(".market-btn").on("click", function () {
+        const marketKey = $(this).data("market");
+        $(".market-btn").removeClass("active");
+        $(this).addClass("active");
+        $("#marketSelect").val(marketKey);
+        updateMarketPanel(marketKey);
+        calculateSimulator();
+      });
 
-            initMarketChart(marketKey);
+      $("#marketSelect").on("change", function () {
+        const marketKey = $(this).val();
+        $(".market-btn").removeClass("active");
+        $(`.market-btn[data-market="${marketKey}"]`).addClass("active");
+        updateMarketPanel(marketKey);
+        calculateSimulator();
+      });
+
+      $(".seg-btn").on("click", function () {
+        currentPacing = $(this).data("pacing");
+        $(".seg-btn").removeClass("active");
+        $(this).addClass("active");
+        calculateSimulator();
+      });
+
+      $("#budgetRange, #objectiveSelect, #durationRange, #frequencyRange").on("input change", calculateSimulator);
+
+      $("a[href^='#']").on("click", function (event) {
+        const target = $($(this).attr("href"));
+        if (target.length) {
+          event.preventDefault();
+          $("html, body").animate({ scrollTop: target.offset().top - 44 }, 500);
+          $(".nav").removeClass("open");
+          $(".menu-toggle").attr("aria-expanded", "false");
         }
+      });
 
-        function executeSimulation() {
-            const budget = parseFloat(document.getElementById('p-custom-budget').value);
-            const duration = parseInt(document.getElementById('p-planner-duration').value);
-            const targetFrequency = parseFloat(document.getElementById('p-planner-frequency').value);
-            const pacing = document.getElementById('p-planner-pacing').value;
-            const market = document.getElementById('p-planner-market').value;
-            const objective = document.getElementById('p-planner-objective').value;
+      $(".menu-toggle").on("click", function () {
+        const nav = $(".nav");
+        nav.toggleClass("open");
+        $(this).attr("aria-expanded", nav.hasClass("open") ? "true" : "false");
+      });
 
-            // Basic Element Reset
-            document.getElementById('kpi-box-impressions').style.borderColor = '';
-            document.getElementById('kpi-box-reach').style.borderColor = '';
-            document.getElementById('kpi-box-cpm').style.borderColor = '';
-            document.getElementById('diagnostics-log-box').style.borderColor = '';
-            document.getElementById('diag-icon').style.color = '';
+      function revealOnScroll() {
+        const trigger = $(window).height() * 0.92;
+        $(".fade-up").each(function () {
+          const top = this.getBoundingClientRect().top;
+          if (top < trigger) $(this).addClass("visible");
+        });
+      }
 
-            const numActivePlatforms = 6;
-            const minDailySpendPerPlatform = 15; // $15 daily minimum budget limit per active DSP node
-            const absoluteMinBudgetRequired = minDailySpendPerPlatform * duration * numActivePlatforms;
-
-            // Underfunded Budget Threshold Exception Handling
-            if (budget < absoluteMinBudgetRequired) {
-                document.getElementById('welcome-state').style.display = 'none';
-
-                // Set KPIs to error states
-                document.getElementById('calc-kpi-impressions').innerHTML = '<span class="text-red-500 font-bold">ERROR</span>';
-                document.getElementById('calc-kpi-reach').innerHTML = '<span class="text-red-500 font-bold">INSUFFICIENT</span>';
-                if (document.getElementById('calc-kpi-reach-pct')) document.getElementById('calc-kpi-reach-pct').classList.add('hidden');
-                document.getElementById('calc-kpi-cpm').innerHTML = '<span class="text-red-500 font-bold">N/A</span>';
-
-                // Paint KPI Borders Red
-                document.getElementById('kpi-box-impressions').style.borderColor = '#991B1B';
-                document.getElementById('kpi-box-reach').style.borderColor = '#991B1B';
-                document.getElementById('kpi-box-cpm').style.borderColor = '#991B1B';
-                document.getElementById('diagnostics-log-box').style.borderColor = '#991B1B';
-                document.getElementById('diag-icon').style.color = '#EF4444';
-
-                // Display Error in Diagnostic Box
-                document.getElementById('p-saturation-alert').innerHTML = `<strong class="text-red-400">CRITICAL: Campaign Budget Underfunded.</strong><br>A ${duration}-day campaign running across ${numActivePlatforms} platforms requires an absolute minimum liquidity of <strong class="text-white">$${absoluteMinBudgetRequired.toLocaleString()}</strong> (configured at $${minDailySpendPerPlatform}/day/platform baseline thresholds). Please raise your total media investment.`;
-
-                // Wipe table rows
-                document.getElementById('calc-platform-rows').innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-red-500 font-mono-custom text-xs">
-                            BUDGET ERROR: PLEASE INCREASE MEDIA INVESTMENT TO AT LEAST $${absoluteMinBudgetRequired.toLocaleString()}
-                        </td>
-                    </tr>
-                `;
-
-                if (currentAllocationChart) {
-                    currentAllocationChart.destroy();
-                }
-                return;
-            }
-
-            // Remove welcome screen
-            document.getElementById('welcome-state').style.display = 'none';
-
-            const countryDef = marketData[market];
-            const costs = regionalAdCosts[countryDef.tier];
-
-            // Setup platform weights based on strategic objective
-            let allocationShares = {};
-            if (objective === 'awareness') {
-                allocationShares = { 'Snapchat': 0.15, 'YouTube': 0.25, 'X (Twitter)': 0.10, 'TikTok': 0.15, 'Instagram': 0.20, 'Facebook': 0.15 };
-            } else if (objective === 'viral') {
-                allocationShares = { 'Snapchat': 0.20, 'YouTube': 0.10, 'X (Twitter)': 0.05, 'TikTok': 0.35, 'Instagram': 0.20, 'Facebook': 0.10 };
-            } else if (objective === 'conversion') {
-                allocationShares = { 'Snapchat': 0.10, 'YouTube': 0.15, 'X (Twitter)': 0.05, 'TikTok': 0.15, 'Instagram': 0.30, 'Facebook': 0.25 };
-            } else { // flashpoint
-                allocationShares = { 'Snapchat': 0.25, 'YouTube': 0.10, 'X (Twitter)': 0.40, 'TikTok': 0.10, 'Instagram': 0.10, 'Facebook': 0.05 };
-            }
-
-            // Skew by native market platform affinities
-            const platformsList = Object.keys(allocationShares);
-            let combinedWeight = 0;
-            platformsList.forEach(platform => {
-                let idx = countryDef.labels.indexOf(platform);
-                let affinity = countryDef.platforms[idx] / 100;
-                allocationShares[platform] = allocationShares[platform] * (0.5 + affinity);
-                combinedWeight += allocationShares[platform];
-            });
-            platformsList.forEach(p => allocationShares[p] /= combinedWeight);
-
-            // Calculate Base Pacing Multipliers
-            let pacingCPMPremium = 1.0;
-            if (pacing === 'frontloaded') {
-                pacingCPMPremium = 1.15;
-            } else if (pacing === 'accelerated') {
-                pacingCPMPremium = 1.60;
-            }
-
-            // MatchdayOS Dual-Force Simulation Algorithm
-            const scaleEfficiency = Math.max(0.75, Math.min(1.0, Math.pow(budget / 100000, -0.05)));
-            const durationPenalty = Math.max(0, 1 - (duration / 30));
-            const fatiguePremium = 1.0 + (0.08 * Math.max(0, targetFrequency - 1.0)) * (1.0 + durationPenalty);
-
-            let results = [];
-            let aggregateImpressions = 0;
-            let aggregateReach = 0;
-            let totalFlagSaturated = false;
-
-            platformsList.forEach(platform => {
-                const spend = budget * allocationShares[platform];
-                const baseCosts = costs[platform];
-
-                // Execute Effective CPM multiplier with Pacing modifiers applied
-                const eCPM = baseCosts.cpm * scaleEfficiency * fatiguePremium * pacingCPMPremium;
-                const platformImpressions = (spend / eCPM) * 1000;
-                let platformReach = platformImpressions / targetFrequency;
-
-                // Max Audience Saturation Cap
-                const idx = countryDef.labels.indexOf(platform);
-                const platformAudienceCap = countryDef.rawAudience * (countryDef.platforms[idx] / 100);
-
-                let isSaturated = false;
-                if (platformReach > platformAudienceCap) {
-                    platformReach = platformAudienceCap;
-                    isSaturated = true;
-                    totalFlagSaturated = true;
-                }
-
-                const eCPC = baseCosts.cpc * scaleEfficiency * fatiguePremium * pacingCPMPremium;
-                const estClicks = spend / eCPC;
-
-                results.push({
-                    name: platform,
-                    spend: spend,
-                    share: allocationShares[platform] * 100,
-                    eCPM: eCPM,
-                    reach: platformReach,
-                    clicks: estClicks,
-                    saturated: isSaturated,
-                    color: baseCosts.color
-                });
-
-                aggregateImpressions += platformImpressions;
-                aggregateReach += platformReach;
-            });
-
-            const overallBlendedCPM = (budget / aggregateImpressions) * 1000;
-
-            // Render KPI blocks
-            document.getElementById('calc-kpi-impressions').innerText = Math.round(aggregateImpressions).toLocaleString();
-            document.getElementById('calc-kpi-reach').innerText = Math.round(aggregateReach).toLocaleString();
-            const reachPctEl = document.getElementById('calc-kpi-reach-pct');
-            if (reachPctEl) {
-                const pctOfPopulation = (aggregateReach / countryDef.totalPopulation) * 100;
-                reachPctEl.innerText = `(${pctOfPopulation.toFixed(1)}% of Pop)`;
-                reachPctEl.classList.remove('hidden');
-            }
-            document.getElementById('calc-kpi-cpm').innerText = "$" + overallBlendedCPM.toFixed(2);
-
-            // Render Table Rows
-            const tbody = document.getElementById('calc-platform-rows');
-            let rowsHtml = '';
-            results.sort((a, b) => b.spend - a.spend).forEach(r => {
-                let badge = '';
-                if (r.saturated) {
-                    badge = `<span class="bg-red-950/45 text-red-400 border border-red-900/30 px-2 py-0.5 rounded text-[8px]">CAPPED</span>`;
-                } else if (pacing === 'accelerated') {
-                    badge = `<span class="bg-amber-950/45 text-amber-400 border border-amber-800/30 px-2 py-0.5 rounded text-[8px]">VOLATILE</span>`;
-                } else {
-                    badge = `<span class="bg-emerald-950/45 text-emerald-400 border border-emerald-800/30 px-2 py-0.5 rounded text-[8px]">OPTIMAL</span>`;
-                }
-
-                rowsHtml += `
-                    <tr class="hover:bg-zinc-900/10 transition-colors">
-                        <td class="px-4 py-3 font-semibold text-white font-sans text-xs flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full block" style="background-color: ${r.color}"></span> ${r.name}
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                            <span class="block text-zinc-305 font-bold">$${Math.round(r.spend).toLocaleString()}</span>
-                            <span class="block text-[8px] text-zinc-600">${r.share.toFixed(1)}%</span>
-                        </td>
-                        <td class="px-4 py-3 text-right text-zinc-500">$${r.eCPM.toFixed(2)}</td>
-                        <td class="px-4 py-3 text-right text-emerald-400 font-bold">${Math.round(r.reach).toLocaleString()}</td>
-                        <td class="px-4 py-3 text-right text-sky-400">${Math.round(r.clicks).toLocaleString()}</td>
-                        <td class="px-4 py-3 text-center">${badge}</td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = rowsHtml;
-
-            // Diagnostics Feed Console Output
-            let diagText = `Engine compiled. Scale discount yielding ${((1 - scaleEfficiency) * 100).toFixed(1)}% efficiency markup. `;
-            if (fatiguePremium > 1.0) diagText += `Warning: Frequency targets of ${targetFrequency}x triggered a fatigue penalty of +${((fatiguePremium - 1) * 100).toFixed(1)}%. `;
-            if (pacing === 'accelerated') diagText += `<strong class="text-amber-400">Pacing Alert:</strong> ASAP bidding forced a +60% auction CPM penalty across active inventory nodes. `;
-            if (totalFlagSaturated) diagText += `Strategic Alert: Campaign volume exceeds target community caps on high-affinity channels.`;
-            document.getElementById('p-saturation-alert').innerHTML = diagText;
-
-            // Render the Capital Allocation Bar Chart
-            const canvasEl = document.getElementById('plannerChart');
-            const ctx = canvasEl.getContext('2d');
-
-            if (currentAllocationChart) {
-                currentAllocationChart.destroy();
-            }
-
-            // Force dynamic repaint delay for Chart container
-            window.requestAnimationFrame(() => {
-                currentAllocationChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: results.map(r => r.name),
-                        datasets: [{
-                            data: results.map(r => r.spend),
-                            backgroundColor: results.map(r => r.color),
-                            borderRadius: 2,
-                            barThickness: 16
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 8 }, color: '#52525b' } },
-                            y: { grid: { color: '#121216' }, border: { display: false }, ticks: { font: { size: 8 }, color: '#27272a' } }
-                        }
-                    }
-                });
-            });
-        }
-
-        // Initialize default view on mount
-        window.onload = () => {
-            updateMarket('ksa');
-        };
-    </script>
+      $(window).on("scroll resize", revealOnScroll);
+      updateMarketPanel("saudi");
+      calculateSimulator();
+      revealOnScroll();
+    });
+  </script>
 </body>
-
 </html>
