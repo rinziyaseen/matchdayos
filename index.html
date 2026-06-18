@@ -8,6 +8,8 @@
 
   <!-- jQuery preserved as the interaction layer. No React/Vue/heavy framework. -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Chart.js powers the lightweight pacing curve in the simulator. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
@@ -21,7 +23,16 @@
       --line-soft: #e8e8ed;
       --black: #000000;
       --white: #ffffff;
-      --accent: #1d1d1f;
+      --accent: #0a84ff;
+      --blue: #0a84ff;
+      --indigo: #5e5ce6;
+      --purple: #bf5af2;
+      --pink: #ff375f;
+      --orange: #ff9f0a;
+      --teal: #32ade6;
+      --green: #30d158;
+      --grad-brand: linear-gradient(120deg, #0a84ff 0%, #5e5ce6 36%, #bf5af2 64%, #ff375f 100%);
+      --grad-cool: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 55%, #bf5af2 100%);
       --radius-xl: 30px;
       --radius-lg: 22px;
       --radius-md: 16px;
@@ -37,7 +48,12 @@
     body {
       margin: 0;
       color: var(--ink);
-      background: var(--bg);
+      background:
+        radial-gradient(58% 46% at 12% -4%, rgba(10,132,255,.14), transparent 60%),
+        radial-gradient(52% 44% at 102% 2%, rgba(191,90,242,.13), transparent 60%),
+        radial-gradient(48% 42% at 50% 110%, rgba(255,55,95,.08), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -112,13 +128,14 @@
       justify-content: center;
       border-radius: 999px;
       color: var(--white);
-      background: var(--black);
+      background: var(--grad-cool);
       font-size: 12px;
       font-weight: 600;
-      transition: transform .2s var(--ease), opacity .2s var(--ease);
+      box-shadow: 0 6px 18px rgba(10,132,255,.32);
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
     }
 
-    .nav-cta:hover { transform: translateY(-1px); opacity: .9; }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 9px 24px rgba(94,92,230,.42); }
 
     .menu-toggle {
       display: none;
@@ -144,7 +161,10 @@
       font-size: 15px;
       line-height: 1.2;
       font-weight: 700;
-      color: var(--ink);
+      background: var(--grad-brand);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
       letter-spacing: -.02em;
     }
 
@@ -155,7 +175,10 @@
       line-height: .94;
       letter-spacing: -.065em;
       font-weight: 750;
-      color: var(--ink);
+      background: linear-gradient(118deg, #1d1d1f 0%, #1d1d1f 22%, #0a84ff 50%, #5e5ce6 68%, #bf5af2 84%, #ff375f 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hero-copy {
@@ -191,9 +214,9 @@
       transition: transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
     }
 
-    .pill-button.primary { background: var(--black); color: var(--white); }
-    .pill-button.secondary { background: var(--surface); color: var(--ink); }
-    .pill-button:hover { transform: translateY(-2px); }
+    .pill-button.primary { background: var(--grad-cool); color: var(--white); box-shadow: 0 10px 26px rgba(10,132,255,.34); }
+    .pill-button.secondary { background: var(--surface); color: var(--accent); }
+    .pill-button:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(94,92,230,.40); }
 
     .product-strip {
       margin: 34px auto 0;
@@ -221,10 +244,16 @@
       border-radius: 12px;
       display: grid;
       place-items: center;
-      background: var(--surface);
-      color: var(--ink);
+      background: var(--grad-cool);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(10,132,255,.28);
       margin-bottom: 18px;
+      transition: transform .25s var(--ease);
     }
+    .strip-card:nth-of-type(1) .icon-bubble { background: linear-gradient(135deg,#0a84ff,#5e5ce6); box-shadow: 0 8px 18px rgba(10,132,255,.32); }
+    .strip-card:nth-of-type(2) .icon-bubble { background: linear-gradient(135deg,#ff375f,#ff9f0a); box-shadow: 0 8px 18px rgba(255,55,95,.30); }
+    .strip-card:nth-of-type(3) .icon-bubble { background: linear-gradient(135deg,#30d158,#32ade6); box-shadow: 0 8px 18px rgba(48,209,88,.28); }
+    .strip-card:hover .icon-bubble { transform: scale(1.06) rotate(-2deg); }
 
     .strip-card h3 {
       margin: 0 0 7px;
@@ -251,7 +280,7 @@
 
     .section-kicker {
       margin: 0 0 8px;
-      color: var(--muted-2);
+      color: var(--accent);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: .09em;
@@ -311,7 +340,7 @@
 
     .market-btn + .market-btn { margin-top: 4px; }
     .market-btn:hover { background: rgba(255,255,255,.75); }
-    .market-btn.active { background: var(--white); box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+    .market-btn.active { background: var(--white); box-shadow: 0 6px 20px rgba(10,132,255,.20); border-left: 3px solid var(--accent); }
 
     .market-name {
       display: flex;
@@ -334,8 +363,8 @@
       font-weight: 700;
       padding: 5px 8px;
       border-radius: 999px;
-      background: #f5f5f7;
-      color: var(--ink);
+      background: rgba(10,132,255,.12);
+      color: var(--accent);
     }
 
     .audience-panel {
@@ -425,7 +454,11 @@
       border-radius: 22px;
     }
 
-    .signal svg { margin-bottom: 20px; color: var(--ink); }
+        .signal svg { margin-bottom: 20px; color: var(--accent); }
+    .signal:nth-of-type(1) svg { color: var(--blue); }
+    .signal:nth-of-type(2) svg { color: var(--purple); }
+    .signal:nth-of-type(3) svg { color: var(--pink); }
+    .signal:nth-of-type(4) svg { color: var(--orange); }
     .signal strong { display: block; font-size: 14px; letter-spacing: -.02em; }
     .signal span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.35; }
 
@@ -522,7 +555,7 @@
 
     input[type="range"] {
       width: 100%;
-      accent-color: #1d1d1f;
+      accent-color: var(--accent);
     }
 
     .segmented {
@@ -708,7 +741,12 @@
       box-shadow: var(--shadow-card);
     }
 
-    .framework-card svg { margin-bottom: 22px; }
+        .framework-card svg { margin-bottom: 22px; color: var(--accent); }
+    .framework-card:nth-of-type(1) svg { color: var(--blue); }
+    .framework-card:nth-of-type(2) svg { color: var(--indigo); }
+    .framework-card:nth-of-type(3) svg { color: var(--purple); }
+    .framework-card:nth-of-type(4) svg { color: var(--pink); }
+    .framework-card:nth-of-type(5) svg { color: var(--green); }
     .framework-card strong { display: block; font-size: 15px; line-height: 1.05; letter-spacing: -.03em; }
     .framework-card span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.35; }
 
@@ -832,6 +870,229 @@
       color: var(--white);
       font-size: 11px;
       line-height: 1;
+    }
+
+
+    /* Advanced simulation engine additions - Apple light treatment */
+    .sim-grid.advanced {
+      grid-template-columns: minmax(320px, 390px) 1fr;
+    }
+
+    .control-card.compact { padding: 22px; }
+
+    .control-note {
+      margin: -6px 0 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: -.01em;
+    }
+
+    .field.two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .field.two-col .field { margin-bottom: 0; }
+
+    .result-card.engine { overflow: hidden; }
+
+    .metric-grid.engine-metrics {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .metric.primary-metric {
+      background: var(--grad-cool);
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(94,92,230,.30);
+      border-color: transparent;
+    }
+
+    .metric-grid.engine-metrics .metric { min-height: 104px; }
+
+    .field-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: -.01em;
+    }
+
+    .metric.primary-metric span,
+    .metric.primary-metric em { color: rgba(255,255,255,.68); }
+
+    .metric.primary-metric strong { color: #fff; }
+
+    .metric small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: -.01em;
+    }
+
+    .engine-panels {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .engine-panel {
+      padding: 18px;
+      border-radius: 24px;
+      background: #fff;
+      border: 1px solid var(--line-soft);
+    }
+
+    .engine-panel h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      letter-spacing: -.03em;
+    }
+
+    .engine-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .platform-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .platform-item {
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--surface-2);
+      border: 1px solid var(--line-soft);
+    }
+
+    .platform-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .platform-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .platform-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ink);
+      flex: 0 0 auto;
+    }
+
+    .platform-share {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 7px;
+      border-radius: 999px;
+      background: #e8e8ed;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--ink);
+      transition: width .35s var(--ease);
+    }
+
+    .platform-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+      gap: 8px 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted-2);
+      font-size: 9px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .stat-val {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .chart-wrap {
+      height: 220px;
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .control-card .pacing-panel {
+      margin: 0 0 20px;
+    }
+
+    .control-card .pacing-panel .chart-wrap {
+      height: 190px;
+    }
+
+    .consolidator-banner {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: #fff7e6;
+      border: 1px solid #f4d39b;
+      color: #6b4c00;
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+
+    .consolidator-banner strong { color: #3b2a00; }
+
+    .diagnostic.warning {
+      background: #fff7e6;
+      border: 1px solid #f4d39b;
+      color: #6b4c00;
+    }
+
+    @media (max-width: 980px) {
+      .sim-grid.advanced,
+      .engine-panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .field.two-col { grid-template-columns: 1fr; }
+      .metric-grid.engine-metrics { grid-template-columns: repeat(2, 1fr); }
+      .chart-wrap { height: 220px; }
     }
 
   </style>
@@ -984,89 +1245,126 @@
             <p class="section-kicker">Budget Simulator</p>
             <h2>Model the plan.<br>See the pressure.</h2>
           </div>
-          <p>Adjust budget, market, duration, frequency and pacing. Outputs refresh instantly with reach, impressions and allocation logic.</p>
+          <p>Adjust market, objective, budget, duration, frequency, pacing, audience and creative. The engine refreshes instantly.</p>
         </div>
 
-        <div class="sim-grid fade-up">
-          <div class="control-card">
+        <div class="sim-grid advanced fade-up">
+          <div class="control-card compact">
+            <p class="control-note">High-fidelity planning engine with platform consolidation, audience depth, creative fatigue and pacing curves.</p>
+
             <div class="field">
               <div class="field-head"><label for="budgetRange">Investment</label><span class="value-pill" id="budgetLabel">$75,000</span></div>
-              <input id="budgetRange" type="range" min="10000" max="300000" step="5000" value="75000" />
+              <input id="budgetRange" type="range" min="2000" max="1000000" step="1000" value="75000" />
             </div>
 
-            <div class="field">
-              <div class="field-head"><label for="marketSelect">Market</label><span class="value-pill">GCC/MENA</span></div>
-              <div class="select-wrap">
-                <select id="marketSelect">
-                  <option value="saudi">Saudi Arabia</option>
-                  <option value="qatar">Qatar</option>
-                  <option value="uae">UAE</option>
-                  <option value="kuwait">Kuwait</option>
-                  <option value="oman">Oman</option>
-                  <option value="bahrain">Bahrain</option>
-                  <option value="egypt">Egypt</option>
-                  <option value="tunisia">Tunisia</option>
-                </select>
+            <div class="field two-col">
+              <div class="field">
+                <div class="field-head"><label for="marketSelect">Market</label></div>
+                <div class="select-wrap">
+                  <select id="marketSelect">
+                    <option value="saudi">Saudi Arabia</option>
+                    <option value="qatar">Qatar</option>
+                    <option value="uae">UAE</option>
+                    <option value="kuwait">Kuwait</option>
+                    <option value="oman">Oman</option>
+                    <option value="bahrain">Bahrain</option>
+                    <option value="egypt">Egypt</option>
+                    <option value="tunisia">Tunisia</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-head"><label for="objectiveSelect">Objective</label></div>
+                <div class="select-wrap">
+                  <select id="objectiveSelect">
+                    <option value="awareness">Awareness</option>
+                    <option value="video_views">Video Views</option>
+                    <option value="app_installs">App Installs</option>
+                    <option value="leads">Lead Acquisition</option>
+                    <option value="sales">Sales / Tickets</option>
+                    <option value="fan_zones">Fan Zones</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field two-col">
+              <div class="field">
+                <div class="field-head"><label for="audienceNiche">Audience</label></div>
+                <div class="select-wrap">
+                  <select id="audienceNiche">
+                    <option value="broad">Broad Reach</option>
+                    <option value="sports">Football Fans</option>
+                    <option value="hnwi">HNWI</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-head"><label for="creativeVariety">Creative</label></div>
+                <div class="select-wrap">
+                  <select id="creativeVariety">
+                    <option value="standard">Balanced</option>
+                    <option value="cinematic">Cinematic Video</option>
+                    <option value="ugc">UGC / Creator</option>
+                    <option value="static">Static Assets</option>
+                  </select>
+                </div>
+                <p class="field-note" id="creativeNote" style="display:none;">Video view campaigns require video-led creative.</p>
               </div>
             </div>
 
             <div class="field">
-              <div class="field-head"><label for="objectiveSelect">Objective</label><span class="value-pill">Media goal</span></div>
-              <div class="select-wrap">
-                <select id="objectiveSelect">
-                  <option value="reach">Mass Reach</option>
-                  <option value="engagement">Live Engagement</option>
-                  <option value="traffic">Traffic & Search Lift</option>
-                  <option value="retargeting">Retargeting Pool</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="field-head"><span>Pacing</span><span class="value-pill" id="pacingLabel">Balanced</span></div>
+              <div class="field-head"><span>Pacing</span><span class="value-pill" id="pacingLabel">Linear</span></div>
               <div class="segmented" role="group" aria-label="Pacing selector">
-                <button class="seg-btn" type="button" data-pacing="steady">Steady</button>
-                <button class="seg-btn active" type="button" data-pacing="balanced">Balanced</button>
-                <button class="seg-btn" type="button" data-pacing="burst">Burst</button>
+                <button class="seg-btn active" type="button" data-pacing="linear">Linear</button>
+                <button class="seg-btn" type="button" data-pacing="frontloaded">Front-loaded</button>
+                <button class="seg-btn" type="button" data-pacing="flighted">Pulsed</button>
               </div>
             </div>
 
-            <div class="field">
-              <div class="field-head"><label for="durationRange">Duration</label><span class="value-pill" id="durationLabel">14 days</span></div>
-              <input id="durationRange" type="range" min="3" max="30" step="1" value="14" />
+            <div class="engine-panel pacing-panel">
+              <h4>Daily pacing curve</h4>
+              <p>Shows how the budget is distributed across the selected campaign duration.</p>
+              <div class="chart-wrap">
+                <canvas id="pacingChart"></canvas>
+              </div>
+              <div class="diagnostic" id="diagnosticOut"><strong>Live recommendation:</strong> Select your parameters to model campaign delivery.</div>
             </div>
 
             <div class="field">
-              <div class="field-head"><label for="frequencyRange">Frequency cap</label><span class="value-pill" id="frequencyLabel">4.0</span></div>
+              <div class="field-head"><label for="durationRange">Duration</label><span class="value-pill" id="durationLabel">30 days</span></div>
+              <input id="durationRange" type="range" min="5" max="90" step="1" value="30" />
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="frequencyRange">Frequency cap</label><span class="value-pill" id="frequencyLabel">4.0x</span></div>
               <input id="frequencyRange" type="range" min="1" max="8" step="0.5" value="4" />
             </div>
           </div>
 
-          <div class="result-card" aria-live="polite">
+          <div class="result-card engine" aria-live="polite">
             <div class="results-head">
               <div>
                 <h3>Campaign output</h3>
-                <p>Estimated framework based on market pressure, objective and pacing.</p>
+                <p>Dynamic estimates using multi-platform CPM, reach overlap, creative fatigue and learning guardrails.</p>
               </div>
-              <div class="status-dot" id="statusLabel">Balanced</div>
+              <div class="status-dot" id="statusLabel">Linear</div>
             </div>
 
-            <div class="metric-grid">
-              <div class="metric"><span>Impressions</span><strong id="impressionsOut">18.8M</strong></div>
-              <div class="metric"><span>Unique reach</span><strong id="reachOut">4.7M</strong><em id="reachPctOut">13.3% of population</em></div>
-              <div class="metric"><span>Blended CPM</span><strong id="cpmOut">$4.00</strong></div>
-              <div class="metric"><span>Clicks / visits</span><strong id="clicksOut">47K</strong></div>
-            </div>
+            <div class="metric-grid engine-metrics" id="kpiGrid"></div>
 
-            <div class="platforms">
-              <div class="platforms-title"><span>Recommended budget split</span><span id="primaryChannel">Video-led</span></div>
-              <div class="split-row"><span id="labelOne">TikTok</span><div class="bar"><i id="barOne"></i></div><span id="pctOne">34%</span></div>
-              <div class="split-row"><span id="labelTwo">Meta</span><div class="bar"><i id="barTwo"></i></div><span id="pctTwo">28%</span></div>
-              <div class="split-row"><span id="labelThree">YouTube</span><div class="bar"><i id="barThree"></i></div><span id="pctThree">22%</span></div>
-              <div class="split-row"><span id="labelFour">Programmatic</span><div class="bar"><i id="barFour"></i></div><span id="pctFour">16%</span></div>
-            </div>
+            <div class="consolidator-banner" id="consolidatorBanner"><strong>Learning guardrail active.</strong> Small platform budgets were consolidated so active channels remain above the daily learning floor.</div>
 
-            <div class="diagnostic" id="diagnosticOut"><strong>Recommendation:</strong> Use balanced pacing with higher video weight in the first 72 hours, then retarget engaged users around fixture windows.</div>
+            <div class="engine-panels">
+              <div class="engine-panel">
+                <h4>Platform allocation</h4>
+                <p id="primaryChannel">Optimized distribution by market, platform affinity and campaign objective.</p>
+                <div class="platform-list" id="platformList"></div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
@@ -1125,333 +1423,744 @@
   </footer>
 
   <script>
-    /* -----------------------------------------------------------
-       MatchdayOS jQuery layer
-       Preserved/improved behavior:
-       - Smooth scroll navigation
-       - Mobile menu toggle
-       - Audience market tabs
-       - Budget simulator inputs
-       - Campaign output calculations
-       - Platform split and diagnostic recommendation
-    ----------------------------------------------------------- */
+    // ==========================================
+    // Audience intelligence panel database
+    // ==========================================
+    const marketData = {
+      saudi: {
+        title: "Saudi Arabia",
+        audience: "26M",
+        summary: "Scale-led football attention with strong short-form video, social search and creator-led discovery around big fixtures.",
+        signals: ["High Attention", "Social Video", "Geo Windows", "Action Bias"],
+        tags: ["Short-form video", "Creator-led", "Search lift", "Retargeting pool"]
+      },
+      qatar: {
+        title: "Qatar",
+        audience: "1.37M",
+        summary: "Compact premium audience with high fixture concentration across malls, fan zones, hospitality and mobile-first discovery.",
+        signals: ["Premium Reach", "Location Signals", "Fan Zones", "Retargeting"],
+        tags: ["Malls", "Fan zones", "Premium CPM", "High mobile usage"]
+      },
+      uae: {
+        title: "UAE",
+        audience: "7.5M",
+        summary: "Multi-community football audience with strong YouTube, Meta and TikTok behavior across expats, families and premium segments.",
+        signals: ["Broad Mix", "Video Reach", "Search Lift", "Commerce Intent"],
+        tags: ["Expats", "YouTube", "Meta", "Retail moments"]
+      },
+      kuwait: {
+        title: "Kuwait",
+        audience: "3.2M",
+        summary: "Social-first fan market where Snapchat, TikTok and creator formats can efficiently build attention around fixtures.",
+        signals: ["Social First", "Snap Affinity", "Video Lift", "Youth Reach"],
+        tags: ["Snapchat", "TikTok", "Youth", "Live moments"]
+      },
+      oman: {
+        title: "Oman",
+        audience: "2.7M",
+        summary: "Efficient reach market with lean CPMs and strong potential for balanced awareness plus retargeting campaigns.",
+        signals: ["Efficient Reach", "Balanced CPM", "Steady Pacing", "Mobile Reach"],
+        tags: ["Efficient CPM", "Meta", "YouTube", "Steady delivery"]
+      },
+      bahrain: {
+        title: "Bahrain",
+        audience: "1.1M",
+        summary: "Smaller but concentrated audience pool, suited to disciplined frequency, sharp creative and focused retargeting.",
+        signals: ["Compact Pool", "Frequency Control", "Premium Segments", "Retargeting"],
+        tags: ["Compact market", "Frequency cap", "Premium audience", "Meta"]
+      },
+      egypt: {
+        title: "Egypt",
+        audience: "40M",
+        summary: "Large, passionate football audience with strong scale economics across Meta, TikTok and YouTube.",
+        signals: ["Mass Scale", "Low CPM", "Passion Market", "Video Depth"],
+        tags: ["Scale", "Low CPM", "Meta", "YouTube"]
+      },
+      tunisia: {
+        title: "Tunisia",
+        audience: "6M",
+        summary: "Community-led football demand with efficient CPMs and strong live conversation opportunities around key matches.",
+        signals: ["Community Led", "Efficient CPM", "Live Talk", "Video Reach"],
+        tags: ["Community", "Efficient", "Meta", "TikTok"]
+      }
+    };
 
-    $(function () {
-      const marketData = {
-        saudi: {
-          title: "Saudi Arabia",
-          audience: "18.4M",
-          population: 35300280,
-          summary: "Scale-led football attention with strong short-form video, social search and creator-led discovery around big fixtures.",
-          tags: ["Short-form video", "Creator-led", "Search lift", "Retargeting pool"],
-          signals: ["High Attention", "Social Video", "Geo Windows", "Action Bias"],
-          cpm: 4.0,
-          fanBase: 18400000,
-          ctr: 0.0025,
-          pressure: 1.12,
-          maxReachShare: 0.74
-        },
-        qatar: {
-          title: "Qatar",
-          audience: "1.9M",
-          population: 2857822,
-          summary: "Compact premium attention around malls, fan zones, hospitality venues and high-value urban screens.",
-          tags: ["Premium reach", "Malls", "Fan zones", "DOOH retargeting"],
-          signals: ["Premium Reach", "Location Led", "High Intent", "Retargeting"],
-          cpm: 5.2,
-          fanBase: 1900000,
-          ctr: 0.0022,
-          pressure: 1.18,
-          maxReachShare: 0.72
-        },
-        uae: {
-          title: "UAE",
-          audience: "7.8M",
-          population: 10986400,
-          summary: "Diverse football communities with strong premium video, creator content, search and retail-triggered intent.",
-          tags: ["Multi-community", "Premium video", "Retail", "Search"],
-          signals: ["Broad Reach", "Premium Video", "Retail Lift", "Search Intent"],
-          cpm: 5.8,
-          fanBase: 7800000,
-          ctr: 0.0024,
-          pressure: 1.2,
-          maxReachShare: 0.70
-        },
-        kuwait: {
-          title: "Kuwait",
-          audience: "2.7M",
-          population: 4897263,
-          summary: "Social-first football attention with strong mobile usage, creator resonance and compact reach planning.",
-          tags: ["Social-first", "Mobile video", "Creators", "Compact reach"],
-          signals: ["Social First", "Mobile Heavy", "Creator Fit", "Fast Reach"],
-          cpm: 4.6,
-          fanBase: 2700000,
-          ctr: 0.0023,
-          pressure: 1.08,
-          maxReachShare: 0.73
-        },
-        oman: {
-          title: "Oman",
-          audience: "2.5M",
-          population: 5281538,
-          summary: "Efficient football reach market where steady pacing and frequency control can work harder.",
-          tags: ["Efficient CPM", "Steady reach", "Frequency", "Value market"],
-          signals: ["Efficient Reach", "Steady Pace", "Value CPM", "Frequency"],
-          cpm: 3.6,
-          fanBase: 2500000,
-          ctr: 0.0021,
-          pressure: 1.02,
-          maxReachShare: 0.72
-        },
-        bahrain: {
-          title: "Bahrain",
-          audience: "780K",
-          population: 1588670,
-          summary: "Small but useful audience pool for sharp targeting, retail, venue and retargeting-led activations.",
-          tags: ["Niche reach", "Retail", "Venues", "Retargeting"],
-          signals: ["Niche Pool", "Retail Fit", "Venue Led", "Retarget"],
-          cpm: 4.8,
-          fanBase: 780000,
-          ctr: 0.0022,
-          pressure: 1.06,
-          maxReachShare: 0.72
-        },
-        egypt: {
-          title: "Egypt",
-          audience: "46.5M",
-          population: 116538258,
-          summary: "Massive football passion market with strong social conversation, live commentary and cost-efficient scale.",
-          tags: ["Mass scale", "Conversation", "Live moments", "Efficient reach"],
-          signals: ["Mass Scale", "Live Talk", "High Passion", "Value Reach"],
-          cpm: 2.4,
-          fanBase: 46500000,
-          ctr: 0.0026,
-          pressure: 1.1,
-          maxReachShare: 0.76
-        },
-        tunisia: {
-          title: "Tunisia",
-          audience: "5.3M",
-          population: 12277109,
-          summary: "Community-driven football attention with sharp live-match spikes and strong discussion-led discovery.",
-          tags: ["Community", "Live spikes", "Discussion", "Social"],
-          signals: ["Community", "Live Spike", "Discussion", "Social Lift"],
-          cpm: 2.9,
-          fanBase: 5300000,
-          ctr: 0.0024,
-          pressure: 1.04,
-          maxReachShare: 0.73
+    // ==========================================
+    // Regional media planning database
+    // The uploaded dynamic engine has been adapted to the Apple-light UI.
+    // ==========================================
+    const MarketDatabase = {
+      saudi: {
+        name: "Saudi Arabia",
+        population: 34500000,
+        totalPopulation: 34500000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  5.50, baseCtr: 0.0120, penetration: 0.65, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  1.70, baseCtr: 0.0165, penetration: 0.80, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.60, baseCtr: 0.0150, penetration: 0.78, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  3.50, baseCtr: 0.0085, penetration: 0.55, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  4.50, baseCtr: 0.0090, penetration: 0.90, color: "#FF3B30" }
         }
-      };
-
-      const objectiveData = {
-        reach: {
-          cpmFactor: 0.92,
-          ctrFactor: 0.82,
-          split: { TikTok: 30, Meta: 26, YouTube: 28, Programmatic: 16 },
-          primary: "Reach-led"
-        },
-        engagement: {
-          cpmFactor: 1.08,
-          ctrFactor: 1.18,
-          split: { TikTok: 38, Meta: 30, YouTube: 18, Programmatic: 14 },
-          primary: "Video-led"
-        },
-        traffic: {
-          cpmFactor: 1.0,
-          ctrFactor: 1.38,
-          split: { Meta: 30, TikTok: 26, YouTube: 16, Search: 28 },
-          primary: "Traffic-led"
-        },
-        retargeting: {
-          cpmFactor: 1.15,
-          ctrFactor: 1.28,
-          split: { Meta: 34, TikTok: 24, Programmatic: 24, YouTube: 18 },
-          primary: "Retargeting-led"
+      },
+      uae: {
+        name: "UAE",
+        population: 9800000,
+        totalPopulation: 9800000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  6.50, baseCtr: 0.0125, penetration: 0.85, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  2.00, baseCtr: 0.0150, penetration: 0.82, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.80, baseCtr: 0.0120, penetration: 0.40, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  4.20, baseCtr: 0.0085, penetration: 0.38, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  5.50, baseCtr: 0.0080, penetration: 0.92, color: "#FF3B30" }
         }
-      };
-
-      const pacingData = {
-        steady: { label: "Steady", factor: 0.95, reachFactor: 1.08, note: "Steady pacing keeps CPM pressure controlled and supports safer frequency management." },
-        balanced: { label: "Balanced", factor: 1.0, reachFactor: 1.0, note: "Balanced pacing gives enough launch weight while keeping room for live fixture shifts." },
-        burst: { label: "Burst", factor: 1.22, reachFactor: 0.86, note: "Burst pacing increases auction pressure, but works well for opening matches and knockout moments." }
-      };
-
-      let currentPacing = "balanced";
-
-      function formatMoney(value) {
-        return "$" + Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 });
+      },
+      qatar: {
+        name: "Qatar",
+        population: 2700000,
+        totalPopulation: 2700000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  6.00, baseCtr: 0.0115, penetration: 0.80, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  1.70, baseCtr: 0.0145, penetration: 0.75, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.60, baseCtr: 0.0125, penetration: 0.48, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  3.80, baseCtr: 0.0090, penetration: 0.40, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  5.00, baseCtr: 0.0080, penetration: 0.90, color: "#FF3B30" }
+        }
+      },
+      kuwait: {
+        name: "Kuwait",
+        population: 4100000,
+        totalPopulation: 4100000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  4.80, baseCtr: 0.0120, penetration: 0.78, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  1.55, baseCtr: 0.0155, penetration: 0.80, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.40, baseCtr: 0.0145, penetration: 0.62, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  3.40, baseCtr: 0.0090, penetration: 0.45, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  4.00, baseCtr: 0.0085, penetration: 0.88, color: "#FF3B30" }
+        }
+      },
+      egypt: {
+        name: "Egypt",
+        population: 54000000,
+        totalPopulation: 110000000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  1.40, baseCtr: 0.0140, penetration: 0.75, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  0.95, baseCtr: 0.0185, penetration: 0.60, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  1.10, baseCtr: 0.0110, penetration: 0.18, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  1.40, baseCtr: 0.0072, penetration: 0.12, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  1.30, baseCtr: 0.0090, penetration: 0.80, color: "#FF3B30" }
+        }
+      },
+      oman: {
+        name: "Oman",
+        population: 4300000,
+        totalPopulation: 4300000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  3.20, baseCtr: 0.0115, penetration: 0.72, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  1.20, baseCtr: 0.0145, penetration: 0.68, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.00, baseCtr: 0.0130, penetration: 0.50, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  2.40, baseCtr: 0.0082, penetration: 0.30, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  3.00, baseCtr: 0.0078, penetration: 0.85, color: "#FF3B30" }
+        }
+      },
+      bahrain: {
+        name: "Bahrain",
+        population: 1450000,
+        totalPopulation: 1450000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  3.60, baseCtr: 0.0120, penetration: 0.82, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  1.30, baseCtr: 0.0150, penetration: 0.72, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  2.20, baseCtr: 0.0135, penetration: 0.55, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  2.80, baseCtr: 0.0085, penetration: 0.35, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  3.40, baseCtr: 0.0082, penetration: 0.88, color: "#FF3B30" }
+        }
+      },
+      tunisia: {
+        name: "Tunisia",
+        population: 8800000,
+        totalPopulation: 12300000,
+        platforms: {
+          meta:    { name: "Meta",      baseCpm:  1.30, baseCtr: 0.0130, penetration: 0.80, color: "#0866FF" },
+          tiktok:  { name: "TikTok",    baseCpm:  0.90, baseCtr: 0.0175, penetration: 0.55, color: "#FE2C55" },
+          snap:    { name: "Snapchat",  baseCpm:  0.90, baseCtr: 0.0100, penetration: 0.15, color: "#F7B500" },
+          twitter: { name: "X",         baseCpm:  1.20, baseCtr: 0.0068, penetration: 0.08, color: "#111114" },
+          youtube: { name: "YouTube",   baseCpm:  1.40, baseCtr: 0.0088, penetration: 0.75, color: "#FF3B30" }
+        }
       }
+    };
 
-      function compactNumber(value) {
-        if (value >= 1000000) return (value / 1000000).toFixed(value >= 10000000 ? 1 : 2).replace(/\.0$/, "") + "M";
-        if (value >= 1000) return Math.round(value / 1000).toLocaleString("en-US") + "K";
-        return Math.round(value).toLocaleString("en-US");
-      }
-
-      function clamp(value, min, max) {
-        return Math.min(Math.max(value, min), max);
-      }
-
-      function updateMarketPanel(marketKey) {
-        const data = marketData[marketKey];
-        if (!data) return;
-
-        $("#marketTitle").text(data.title);
-        $("#marketAudience").text(data.audience);
-        $("#marketSummary").text(data.summary);
-        $("#signalOne").text(data.signals[0]);
-        $("#signalTwo").text(data.signals[1]);
-        $("#signalThree").text(data.signals[2]);
-        $("#signalFour").text(data.signals[3]);
-
-        const tagHtml = data.tags.map(tag => `<span class="tag">${tag}</span>`).join("");
-        $("#marketTags").html(tagHtml);
-      }
-
-      /* -----------------------------------------------------------
-         Real-time simulator calculation logic
-         The simulator updates instantly on every input change.
-
-         Logic model:
-         1. Begin with each market's baseline CPM.
-         2. Adjust CPM by objective, pacing, market pressure, campaign length,
-            daily budget pressure, and high-frequency inefficiency.
-         3. Estimate impressions from investment / adjusted CPM.
-         4. Estimate unique reach from impressions / effective frequency.
-         5. Expand reach gradually as duration increases, because longer flights
-            create more opportunities to find new users.
-         6. Cap unique reach by the available football audience pool.
-         7. Show unique reach as a percentage of total market population.
-
-         Population basis: latest available World Bank 2024 population totals.
-      ----------------------------------------------------------- */
-      function calculateSimulator() {
-        const safeClamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
-        const budget = Math.max(Number($("#budgetRange").val()) || 0, 0);
-        const marketKey = $("#marketSelect").val() || "saudi";
-        const objectiveKey = $("#objectiveSelect").val() || "reach";
-        const duration = Math.max(Number($("#durationRange").val()) || 1, 1);
-        const frequency = Math.max(Number($("#frequencyRange").val()) || 1, 1);
-
-        const market = marketData[marketKey] || marketData.saudi;
-        const objective = objectiveData[objectiveKey] || objectiveData.reach;
-        const pacing = pacingData[currentPacing] || pacingData.balanced;
-
-        const marketCaps = {
-          saudi: 26000000,
-          qatar: 1370000,
-          uae: 7500000,
-          kuwait: 3200000,
-          oman: 2700000,
-          bahrain: 1100000,
-          egypt: 40000000,
-          tunisia: 6000000
+    class ProgrammaticPlanner {
+      constructor() {
+        this.objectiveWeights = {
+          awareness:    { meta: 0.20, tiktok: 0.25, snap: 0.15, twitter: 0.10, youtube: 0.30 },
+          video_views:  { meta: 0.15, tiktok: 0.30, snap: 0.15, twitter: 0.05, youtube: 0.35 },
+          app_installs: { meta: 0.35, tiktok: 0.25, snap: 0.20, twitter: 0.05, youtube: 0.15 },
+          leads:        { meta: 0.40, tiktok: 0.15, snap: 0.15, twitter: 0.15, youtube: 0.15 },
+          sales:        { meta: 0.45, tiktok: 0.20, snap: 0.15, twitter: 0.05, youtube: 0.15 },
+          fan_zones:    { meta: 0.30, tiktok: 0.25, snap: 0.25, twitter: 0.10, youtube: 0.10 }
         };
 
-        const maxReach = marketCaps[marketKey] || marketCaps.saudi;
-        const totalPopulation = Math.max(market.population || maxReach, 100);
-        const dailyBudget = budget / Math.max(duration, 1);
-
-        /* -----------------------------------------------------------
-           Simulator logic: Logistic S-Curve reach model
-
-           - Impressions respond to budget, market CPM, objective, pacing,
-             duration, daily spend pressure, and frequency pressure.
-           - Reach is no longer linear. It follows a Hill/Logistic S-Curve:
-             Reach = (MaxReach * BurnoutFactor) / (1 + exp(-k * (Budget - Midpoint)))
-           - Every market has a hard reach ceiling via marketCaps.
-           - As reach approaches saturation, extra spend primarily increases
-             frequency rather than unique reach.
-           - Safety guards prevent division-by-zero, NaN, and Infinity values.
-        ----------------------------------------------------------- */
-
-        const pacingCpmFactor = currentPacing === "burst" ? 1.18 : currentPacing === "steady" ? 0.96 : 1.04;
-        const durationCpmFactor = safeClamp(1.16 - duration * 0.007, 0.92, 1.16);
-        const dailyPressureFactor = safeClamp(Math.pow(Math.max(dailyBudget, 100) / 8500, 0.08), 0.86, 1.24);
-        const frequencyCpmFactor = frequency > 4 ? 1 + (frequency - 4) * 0.035 : 0.98;
-
-        const baseCpm =
-          (market.cpm || 4.5) *
-          (objective.cpmFactor || 1) *
-          (market.pressure || 1) *
-          pacingCpmFactor *
-          durationCpmFactor *
-          dailyPressureFactor *
-          frequencyCpmFactor;
-
-        const cpm = Math.max(baseCpm, 0.1);
-        const impressions = Math.max((budget / Math.max(cpm, 0.1)) * 1000, 0);
-
-        const pacingReachFactor = currentPacing === "burst" ? 0.86 : currentPacing === "steady" ? 1.08 : 1;
-        const durationReachFactor = safeClamp(0.72 + Math.log(duration + 1) / Math.log(31) * 0.46, 0.78, 1.18);
-        const frequencyBurnout = safeClamp(1 - Math.max(frequency - 3.5, 0) * 0.055, 0.62, 1);
-        const pacingBurnout = currentPacing === "burst" ? 0.92 : 1;
-        const burnoutFactor = safeClamp(durationReachFactor * frequencyBurnout * pacingReachFactor * pacingBurnout, 0.45, 1);
-
-        const marketMidpoints = {
-          saudi: 145000,
-          qatar: 23000,
-          uae: 76000,
-          kuwait: 38000,
-          oman: 34000,
-          bahrain: 18000,
-          egypt: 210000,
-          tunisia: 52000
+        this.marketAffinities = {
+          saudi:   { meta: 0.85, tiktok: 1.20, snap: 1.50, twitter: 1.30, youtube: 1.10 },
+          uae:     { meta: 1.20, tiktok: 1.25, snap: 0.80, twitter: 0.90, youtube: 1.15 },
+          qatar:   { meta: 1.10, tiktok: 1.10, snap: 1.25, twitter: 1.05, youtube: 1.10 },
+          kuwait:  { meta: 0.95, tiktok: 1.15, snap: 1.40, twitter: 1.10, youtube: 1.05 },
+          egypt:   { meta: 1.40, tiktok: 1.30, snap: 0.40, twitter: 0.60, youtube: 1.15 },
+          oman:    { meta: 1.10, tiktok: 1.05, snap: 1.15, twitter: 0.80, youtube: 1.10 },
+          bahrain: { meta: 1.15, tiktok: 1.10, snap: 1.15, twitter: 0.90, youtube: 1.10 },
+          tunisia: { meta: 1.50, tiktok: 1.10, snap: 0.30, twitter: 0.40, youtube: 1.10 }
         };
 
-        const midpoint = marketMidpoints[marketKey] || 65000;
-        const k = 0.000028;
+        // Objective definitions. `kind` decides how the outcome is modeled:
+        //   awareness   - reach/CPM led; video KPIs appear only with video creative
+        //   video       - video-view led (impression based), no click KPIs
+        //   performance - conversion led (click based) with a cost-per result
+        this.objectiveModel = {
+          awareness:    { kind: "awareness" },
+          video_views:  { kind: "video",       videoRate: 0.18, metricLabel: "Views",              costLabel: "CPV (Cost / View)",     metricShort: "Views",    costShort: "CPV" },
+          app_installs: { kind: "performance", rate: 0.035,     metricLabel: "App Installs",        costLabel: "CPI (Cost / Install)",  metricShort: "Installs", costShort: "CPI" },
+          leads:        { kind: "performance", rate: 0.025,     metricLabel: "Leads Captured",      costLabel: "CPL (Cost / Lead)",     metricShort: "Leads",    costShort: "CPL" },
+          sales:        { kind: "performance", rate: 0.016,     metricLabel: "Purchases / Tickets", costLabel: "CPP (Cost / Purchase)", metricShort: "Sales",    costShort: "CPP" },
+          fan_zones:    { kind: "performance", rate: 0.045,     metricLabel: "RSVP / Directions",   costLabel: "Cost / Action",         metricShort: "Actions",  costShort: "CPA" }
+        };
 
-        const logisticReach = (maxReach * burnoutFactor) / (1 + Math.exp(-k * (budget - midpoint)));
-        const frequencyReachLimit = impressions / Math.max(frequency, 1);
-        const reach = Math.max(Math.min(logisticReach, frequencyReachLimit, maxReach), 0);
+        // View rate when an Awareness campaign runs a video-led creative.
+        this.awarenessVideoRate = 0.32;
 
-        const safeImpressionDenominator = Math.max(impressions, 100);
-        const calculatedCpm = (budget / safeImpressionDenominator) * 1000;
-        const clicks = Math.max(impressions * (market.ctr || 0.0025) * (objective.ctrFactor || 1), 0);
-        const reachPctOfPopulation = (reach / Math.max(totalPopulation, 100)) * 100;
-        const saturationRatio = reach / Math.max(maxReach, 100);
+        // Relative video-completion propensity by platform (video objectives).
+        this.platformVideoIndex = { meta: 0.90, tiktok: 1.15, snap: 1.00, twitter: 0.80, youtube: 1.20 };
 
-        $("#budgetLabel").text(formatMoney(budget));
-        $("#durationLabel").text(duration + (duration === 1 ? " day" : " days"));
-        $("#frequencyLabel").text(frequency.toFixed(1));
-        $("#pacingLabel").text(pacing.label);
+        // Relative conversion efficiency by performance objective and platform.
+        this.platformConversionIndex = {
+          app_installs: { meta: 1.15, tiktok: 1.05, snap: 1.10, twitter: 0.80, youtube: 0.85 },
+          leads:        { meta: 1.20, tiktok: 0.95, snap: 1.00, twitter: 1.00, youtube: 0.80 },
+          sales:        { meta: 1.25, tiktok: 1.00, snap: 1.05, twitter: 0.80, youtube: 0.80 },
+          fan_zones:    { meta: 1.05, tiktok: 1.10, snap: 1.15, twitter: 0.95, youtube: 0.85 }
+        };
+      }
 
-        $("#impressionsOut").text(compactNumber(impressions));
-        $("#reachOut").text(compactNumber(reach));
-        $("#reachPctOut").text(reachPctOfPopulation.toFixed(reachPctOfPopulation >= 10 ? 1 : 2) + "% of population");
-        $("#cpmOut").text("$" + calculatedCpm.toFixed(2));
-        $("#clicksOut").text(compactNumber(clicks));
-        $("#statusLabel").text(pacing.label);
-        $("#primaryChannel").text(objective.primary);
+      calculate(inputs) {
+        const marketKey = inputs.marketKey || "saudi";
+        const objective = inputs.objective || "awareness";
+        const totalBudget = Math.max(Number(inputs.totalBudget) || 0, 0);
+        const duration = Math.max(Number(inputs.duration) || 1, 1);
+        const targetFrequency = Math.max(Number(inputs.targetFrequency) || 1, 1);
+        const pacing = inputs.pacing || "linear";
+        const audienceNiche = inputs.audienceNiche || "broad";
+        const creativeFactor = inputs.creativeFactor || "standard";
 
-        const entries = Object.entries(objective.split || {});
-        const labels = ["#labelOne", "#labelTwo", "#labelThree", "#labelFour"];
-        const bars = ["#barOne", "#barTwo", "#barThree", "#barFour"];
-        const pcts = ["#pctOne", "#pctTwo", "#pctThree", "#pctFour"];
-
-        entries.slice(0, 4).forEach((entry, index) => {
-          $(labels[index]).text(entry[0]);
-          $(bars[index]).css("width", entry[1] + "%");
-          $(pcts[index]).text(entry[1] + "%");
-        });
-
-        let diagnosticMessage = `<strong>Live recommendation:</strong> ${pacing.note} Use ${objective.primary.toLowerCase()} allocation for ${market.title}. Estimated unique reach is ${reachPctOfPopulation.toFixed(1)}% of the total population.`;
-
-        if (saturationRatio > 0.85) {
-          diagnosticMessage = `<strong>Warning:</strong> You are reaching ${(saturationRatio * 100).toFixed(0)}% of the available market ceiling. Extra spend is now increasing frequency rather than unique reach. Consider widening the audience, extending duration, or reallocating budget into retargeting and sequential creative.`;
-        } else if (frequency > 6) {
-          diagnosticMessage += " Frequency is high, so rotate creative faster to avoid fatigue.";
-        } else if (currentPacing === "burst") {
-          diagnosticMessage += " Burst pacing may increase CPM during marquee fixtures.";
-        } else if (duration < 7) {
-          diagnosticMessage += " Short campaign duration may limit deduplicated reach.";
+        const market = MarketDatabase[marketKey] || MarketDatabase.saudi;
+        let rawAllocations = {};
+        let sumRaw = 0;
+        for (let p in market.platforms) {
+          const baseObj = (this.objectiveWeights[objective] || this.objectiveWeights.awareness)[p] || 0;
+          const affinity = this.marketAffinities[marketKey][p] || 1;
+          const freqModifier = targetFrequency >= 5.0 && ["meta", "tiktok", "snap"].includes(p) ? 1.15 : 1.0;
+          rawAllocations[p] = baseObj * affinity * freqModifier;
+          sumRaw += rawAllocations[p];
         }
 
-        $("#diagnosticOut").html(diagnosticMessage);
+        let finalSplits = {};
+        for (let p in rawAllocations) finalSplits[p] = sumRaw > 0 ? rawAllocations[p] / sumRaw : 0;
+
+        // Learning-phase guardrail: keep active platform allocations above $50/day.
+        const dailyFloor = 50;
+        let activePlatforms = Object.keys(finalSplits);
+        let consolidated = false;
+        while (activePlatforms.length > 1) {
+          let failingPlatform = null;
+          let minDailySpend = Infinity;
+          for (let p of activePlatforms) {
+            const platformDaily = (finalSplits[p] * totalBudget) / duration;
+            if (platformDaily > 0 && platformDaily < dailyFloor && platformDaily < minDailySpend) {
+              failingPlatform = p;
+              minDailySpend = platformDaily;
+            }
+          }
+          if (failingPlatform === null) break;
+          consolidated = true;
+          activePlatforms = activePlatforms.filter(p => p !== failingPlatform);
+          finalSplits[failingPlatform] = 0;
+          const activeSum = activePlatforms.reduce((sum, p) => sum + rawAllocations[p], 0);
+          for (let p of activePlatforms) finalSplits[p] = activeSum > 0 ? rawAllocations[p] / activeSum : 0;
+        }
+
+        if (activePlatforms.length === 1 && ((finalSplits[activePlatforms[0]] * totalBudget) / duration) < dailyFloor) {
+          consolidated = true;
+          const topPlatform = Object.keys(rawAllocations).reduce((a, b) => rawAllocations[a] > rawAllocations[b] ? a : b);
+          for (let p in finalSplits) finalSplits[p] = p === topPlatform ? 1 : 0;
+        }
+
+        let poolSizeModifier = 1.0;
+        let cpmBaseMultiplier = 1.0;
+        let ctrBaseMultiplier = 1.0;
+        if (audienceNiche === "sports") {
+          poolSizeModifier = 0.35;
+          cpmBaseMultiplier = 1.25;
+          ctrBaseMultiplier = 1.45;
+        } else if (audienceNiche === "hnwi") {
+          poolSizeModifier = 0.08;
+          cpmBaseMultiplier = 2.40;
+          ctrBaseMultiplier = 0.90;
+        }
+
+        // Objective + market maturity resolved up-front so per-platform outcomes
+        // can be computed inside the loop (and the blended figure is simply their
+        // sum - the two can never drift apart).
+        const obj = this.objectiveModel[objective] || this.objectiveModel.awareness;
+        const isVideoCreative = (creativeFactor === "cinematic" || creativeFactor === "ugc");
+        // Video views are modeled for the video objective, or for an awareness
+        // campaign whenever the creative is video-led.
+        const videoContext = obj.kind === "video" || (obj.kind === "awareness" && isVideoCreative);
+        const videoRate = obj.kind === "video" ? obj.videoRate : this.awarenessVideoRate;
+        const isPerformance = obj.kind === "performance";
+        const convIndex = isPerformance ? (this.platformConversionIndex[objective] || {}) : {};
+        const maturityModifiers = {
+          saudi: 1.10, uae: 1.20, qatar: 1.15, kuwait: 1.05,
+          egypt: 0.65, oman: 0.85, bahrain: 0.95, tunisia: 0.55
+        };
+        const regionFactor = maturityModifiers[marketKey] || 1.0;
+
+        let platformBreakdown = {};
+        let totalImpressions = 0;
+        let totalClicks = 0;
+        let totalMediaSpend = 0;
+        let totalVideoViews = 0;
+        let totalConversions = 0;
+        let uniqueReachesList = [];
+
+        for (let p in market.platforms) {
+          const budget = finalSplits[p] * totalBudget;
+          if (budget <= 0) continue;
+
+          const pConfig = market.platforms[p];
+          let dynamicCpm = pConfig.baseCpm * cpmBaseMultiplier;
+          let dynamicCtr = pConfig.baseCtr * ctrBaseMultiplier;
+
+          if (creativeFactor === "cinematic") {
+            dynamicCpm *= 1.15;
+            dynamicCtr *= 1.40;
+          } else if (creativeFactor === "ugc") {
+            dynamicCpm *= 0.90;
+            dynamicCtr *= 1.65;
+          } else if (creativeFactor === "static") {
+            dynamicCpm *= 0.85;
+            dynamicCtr *= 0.60;
+          }
+
+          const targetPlatformLimit = market.population * pConfig.penetration * poolSizeModifier;
+          const targetWidth = Math.max(0.10, Math.min(1.0, 1.0 / (targetFrequency * 0.5)));
+          const targetCampaignPool = Math.max(targetPlatformLimit * targetWidth, 100);
+
+          let simImpressions = (budget / Math.max(dynamicCpm, 0.01)) * 1000;
+          let calculatedFrequency = Math.max(1.0, simImpressions / Math.max(targetCampaignPool, 100));
+
+          // Creative fatigue (realistic, saturating): as effective frequency rises,
+          // CPM lifts toward a ceiling (auction saturation) and CTR erodes toward a
+          // floor (banner blindness). The premium PLATEAUS - it does not scale linearly,
+          // which keeps blended CPMs region-accurate even at high saturation.
+          if (calculatedFrequency > 3.0) {
+            let creativeResilience = 1.0; // standard
+            if (creativeFactor === "ugc") creativeResilience = 1.40;        // UGC resists fatigue
+            else if (creativeFactor === "cinematic") creativeResilience = 1.20;
+            else if (creativeFactor === "static") creativeResilience = 0.70; // static fatigues fastest
+
+            const excess = calculatedFrequency - 3.0;
+            // Diminishing-returns CPM premium, hard-capped at ~55% (less for resilient creative).
+            const cpmPremium = Math.min(0.55, (1 - Math.exp(-excess * 0.10)) * 0.75) / creativeResilience;
+            const ctrErosion = Math.min(0.45, excess * 0.05) / creativeResilience;
+
+            dynamicCpm *= (1.0 + cpmPremium);
+            dynamicCtr *= (1.0 - ctrErosion);
+            simImpressions = (budget / Math.max(dynamicCpm, 0.01)) * 1000;
+            calculatedFrequency = Math.max(1.0, simImpressions / Math.max(targetCampaignPool, 100));
+          }
+
+          const simReach = Math.min(targetCampaignPool * (1.0 - Math.exp(-0.85 * (simImpressions / Math.max(targetCampaignPool, 100)))), targetCampaignPool);
+          const actualFrequency = simReach > 0 ? simImpressions / Math.max(simReach, 100) : 0;
+          const simClicks = simImpressions * dynamicCtr;
+          const platformCpc = simClicks > 0 ? budget / simClicks : 0;
+
+          // Video views (only in a video context) and cost per view.
+          const vIndex = this.platformVideoIndex[p] != null ? this.platformVideoIndex[p] : 1.0;
+          const platformVideoViews = videoContext ? simImpressions * videoRate * vIndex : 0;
+          const platformCpv = platformVideoViews > 0 ? budget / platformVideoViews : 0;
+
+          // Performance conversions (installs / leads / sales / actions) off clicks,
+          // tilted by per-platform efficiency and market maturity. Zero otherwise.
+          const convEff = convIndex[p] != null ? convIndex[p] : 1.0;
+          const platformConversions = isPerformance ? simClicks * obj.rate * regionFactor * convEff : 0;
+          const platformCostPer = platformConversions > 0 ? budget / platformConversions : 0;
+
+          platformBreakdown[p] = {
+            name: pConfig.name,
+            color: pConfig.color,
+            budget,
+            percentage: finalSplits[p] * 100,
+            impressions: Math.round(simImpressions),
+            reach: Math.round(simReach),
+            frequency: actualFrequency,
+            clicks: Math.round(simClicks),
+            cpm: dynamicCpm,
+            ctr: dynamicCtr * 100,
+            cpc: platformCpc,
+            videoViews: Math.round(platformVideoViews),
+            cpv: platformCpv,
+            conversions: Math.round(platformConversions),
+            costPer: platformCostPer
+          };
+
+          totalImpressions += simImpressions;
+          totalClicks += simClicks;
+          totalMediaSpend += budget;
+          totalVideoViews += platformVideoViews;
+          totalConversions += platformConversions;
+          uniqueReachesList.push(simReach);
+        }
+
+        /*
+          Blended CPM fix:
+          Do NOT add or average platform CPMs directly. Each platform uses its own
+          region-specific CPM to buy impressions, then the blended CPM is rebuilt as:
+          total active media spend / total simulated impressions * 1,000.
+          This keeps the output tied to the selected region's CPM economics and avoids
+          inflated CPM caused by summing platform CPM values.
+        */
+        const safeImpressions = Math.max(totalImpressions, 100);
+        const safeClicks = Math.max(totalClicks, 100);
+        const blendedCpm = totalImpressions > 0 ? (totalMediaSpend / safeImpressions) * 1000 : 0;
+        const blendedCpc = totalClicks > 0 ? totalMediaSpend / safeClicks : 0;
+        const blendedCtr = totalImpressions > 0 ? (totalClicks / safeImpressions) * 100 : 0;
+
+        // Deduplicated reach: probability overlap model across active platforms.
+        const targetUniverse = Math.max(market.population * poolSizeModifier, 100);
+        let nonReachedProportion = 1.0;
+        for (let r of uniqueReachesList) {
+          const prop = Math.min(r / targetUniverse, 0.99);
+          nonReachedProportion *= (1.0 - prop);
+        }
+        const blendedReach = targetUniverse * (1.0 - nonReachedProportion);
+        const reachPctTotalPopulation = (blendedReach / Math.max(market.totalPopulation, 100)) * 100;
+
+        // Blended totals are simply the sum of per-platform outcomes, so the
+        // headline figure can never drift from the platform breakdown.
+        const videoViewsValue = totalVideoViews;
+        const cpvValue = videoViewsValue > 0 ? totalMediaSpend / Math.max(videoViewsValue, 1) : 0;
+        const conversionValue = totalConversions;
+        const cpaValue = conversionValue > 0 ? totalMediaSpend / Math.max(conversionValue, 1) : 0;
+
+        // Labels for the dynamic objective KPI tiles.
+        const videoLabel = obj.kind === "video" ? obj.metricLabel : "Video Views";
+        const videoShort = obj.kind === "video" ? obj.metricShort : "Views";
+        const metricLabel = isPerformance ? obj.metricLabel : "";
+        const cpaLabel = isPerformance ? obj.costLabel : "";
+
+        let spendTrajectory = [];
+        if (pacing === "linear") {
+          for (let d = 1; d <= duration; d++) spendTrajectory.push({ day: d, spend: totalBudget / duration });
+        } else if (pacing === "frontloaded") {
+          let decaySum = 0;
+          const rate = 0.07;
+          for (let d = 1; d <= duration; d++) decaySum += Math.exp(-rate * (d - 1));
+          for (let d = 1; d <= duration; d++) spendTrajectory.push({ day: d, spend: (Math.exp(-rate * (d - 1)) / decaySum) * totalBudget });
+        } else if (pacing === "flighted") {
+          let weightSum = 0;
+          let dailyWeights = [];
+          for (let d = 1; d <= duration; d++) {
+            const activeCycle = Math.floor((d - 1) / 4) % 2 === 0;
+            const weight = activeCycle ? 1.0 : 0.15;
+            dailyWeights.push(weight);
+            weightSum += weight;
+          }
+          for (let d = 1; d <= duration; d++) spendTrajectory.push({ day: d, spend: (dailyWeights[d - 1] / weightSum) * totalBudget });
+        }
+
+        return {
+          splits: platformBreakdown,
+          consolidated,
+          trajectory: spendTrajectory,
+          summary: {
+            impressions: Math.round(totalImpressions),
+            reach: Math.round(blendedReach),
+            reachPctTotalPopulation,
+            clicks: Math.round(totalClicks),
+            cpm: blendedCpm,
+            cpc: blendedCpc,
+            ctr: blendedCtr,
+            videoViews: Math.round(videoViewsValue),
+            cpv: cpvValue,
+            videoLabel,
+            videoShort,
+            conversion: Math.round(conversionValue),
+            cpa: cpaValue,
+            conversionLabel: metricLabel,
+            cpaLabel,
+            platformMetricShort: obj.metricShort || "",
+            platformCostShort: obj.costShort || "",
+            objectiveKind: obj.kind,
+            videoContext
+          }
+        };
       }
+    }
+
+    const planner = new ProgrammaticPlanner();
+    let currentPacing = "linear";
+    let pacingChartInstance = null;
+
+    function formatMoney(value) {
+      return "$" + Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 });
+    }
+
+    function formatCostPer(value) {
+      value = Number(value) || 0;
+      if (value > 0 && value < 0.10) return "$" + value.toFixed(3);
+      if (value >= 1000) return "$" + compactNumber(value);
+      return "$" + value.toFixed(2);
+    }
+
+    function compactNumber(value) {
+      value = Number(value) || 0;
+      if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(value >= 10000000 ? 1 : 2).replace(/\.0$/, "") + "M";
+      if (Math.abs(value) >= 1000) return Math.round(value / 1000).toLocaleString("en-US") + "K";
+      return Math.round(value).toLocaleString("en-US");
+    }
+
+    function updateMarketPanel(marketKey) {
+      const data = marketData[marketKey] || marketData.saudi;
+      $("#marketTitle").text(data.title);
+      $("#marketAudience").text(data.audience);
+      $("#marketSummary").text(data.summary);
+      $("#signalOne").text(data.signals[0]);
+      $("#signalTwo").text(data.signals[1]);
+      $("#signalThree").text(data.signals[2]);
+      $("#signalFour").text(data.signals[3]);
+      $("#marketTags").html(data.tags.map(tag => `<span class="tag">${tag}</span>`).join(""));
+    }
+
+    function pacingLabel(value) {
+      if (value === "frontloaded") return "Front-loaded";
+      if (value === "flighted") return "Pulsed";
+      return "Linear";
+    }
+
+    // ----- Objective + creative drive which KPIs are visible -----------------
+    // Returns the ordered list of summary tiles and per-platform stats to show.
+    function buildView(objective, creative) {
+      const video = (creative === "cinematic" || creative === "ugc");
+      const clickSet = ["clicks", "ctr", "cpc"];
+      let tiles, pstats;
+
+      if (objective === "video_views") {
+        // Pure video campaign: no click metrics at all.
+        tiles  = ["impressions", "reach", "cpm", "videoViews", "cpv"];
+        pstats = ["cpm", "impressions", "reach", "frequency", "videoViews", "cpv"];
+      } else if (objective === "awareness") {
+        tiles  = ["impressions", "reach", "cpm"].concat(clickSet);
+        pstats = ["cpm", "impressions", "reach", "frequency"].concat(clickSet);
+        if (video) {
+          // Video KPIs only when the creative is video-led.
+          tiles  = tiles.concat(["videoViews", "cpv"]);
+          pstats = pstats.concat(["videoViews", "cpv"]);
+        }
+      } else {
+        // Performance objectives: click metrics + objective result + cost-per.
+        tiles  = ["impressions", "reach", "cpm"].concat(clickSet, ["conversion", "cpa"]);
+        pstats = ["cpm", "impressions", "reach", "frequency"].concat(clickSet, ["conversion", "costPer"]);
+      }
+      return { tiles, pstats };
+    }
+
+    function fmtPct(v) { v = Number(v) || 0; return v.toFixed(v >= 10 ? 1 : 2) + "%"; }
+
+    // Summary KPI tile definitions (label + formatted value).
+    function kpiMeta(s) {
+      return {
+        impressions: { label: "Impressions",       value: compactNumber(s.impressions) },
+        reach:       { label: "Deduplicated reach", value: compactNumber(s.reach), sub: fmtPct(s.reachPctTotalPopulation) + " of population", primary: true },
+        cpm:         { label: "Blended CPM",        value: "$" + s.cpm.toFixed(2) },
+        clicks:      { label: "Estimated clicks",   value: compactNumber(s.clicks) },
+        ctr:         { label: "Blended CTR",        value: s.ctr.toFixed(2) + "%" },
+        cpc:         { label: "Blended CPC",        value: "$" + s.cpc.toFixed(2) },
+        videoViews:  { label: s.videoLabel,         value: compactNumber(s.videoViews) },
+        cpv:         { label: "CPV (cost / view)",  value: formatCostPer(s.cpv) },
+        conversion:  { label: s.conversionLabel,    value: compactNumber(s.conversion) },
+        cpa:         { label: s.cpaLabel,           value: formatCostPer(s.cpa) }
+      };
+    }
+
+    function renderKpis(s, view) {
+      const meta = kpiMeta(s);
+      const html = view.tiles.map(function (k) {
+        const m = meta[k];
+        if (!m) return "";
+        const cls = m.primary ? "metric primary-metric" : "metric";
+        const sub = m.sub ? `<em>${m.sub}</em>` : "";
+        return `<div class="${cls}"><span>${m.label}</span><strong>${m.value}</strong>${sub}</div>`;
+      }).join("");
+      $("#kpiGrid").html(html);
+    }
+
+    // Per-platform stat definitions.
+    function platformStatMeta(item, s) {
+      return {
+        cpm:         { label: "CPM",   value: "$" + item.cpm.toFixed(2) },
+        impressions: { label: "Impr",  value: compactNumber(item.impressions) },
+        reach:       { label: "Reach", value: compactNumber(item.reach) },
+        frequency:   { label: "Freq",  value: item.frequency.toFixed(1) + "x" },
+        clicks:      { label: "Clicks", value: compactNumber(item.clicks) },
+        ctr:         { label: "CTR",   value: item.ctr.toFixed(2) + "%" },
+        cpc:         { label: "CPC",   value: "$" + item.cpc.toFixed(2) },
+        videoViews:  { label: s.videoShort, value: compactNumber(item.videoViews) },
+        cpv:         { label: "CPV",   value: formatCostPer(item.cpv) },
+        conversion:  { label: s.platformMetricShort, value: compactNumber(item.conversions) },
+        costPer:     { label: s.platformCostShort,   value: formatCostPer(item.costPer) }
+      };
+    }
+
+    function renderPlatforms(platforms, s, view) {
+      const html = platforms.map(function (item) {
+        const meta = platformStatMeta(item, s);
+        const stats = view.pstats.map(function (k) {
+          const m = meta[k];
+          if (!m) return "";
+          return `<span><span class="stat-label">${m.label}</span><span class="stat-val">${m.value}</span></span>`;
+        }).join("");
+        return `
+        <div class="platform-item">
+          <div class="platform-header-row">
+            <span class="platform-name"><span class="platform-dot" style="background:${item.color}"></span>${item.name}</span>
+            <span class="platform-share">${formatMoney(item.budget)} · ${item.percentage.toFixed(1)}%</span>
+          </div>
+          <div class="progress-track"><div class="progress-bar" style="width:${Math.min(item.percentage, 100)}%;background:${item.color}"></div></div>
+          <div class="platform-stats-grid">${stats}</div>
+        </div>`;
+      }).join("");
+      $("#platformList").html(html);
+    }
+
+    // Video-view campaigns require a video-led creative: lock the selector,
+    // auto-correct an incompatible choice, and surface the helper note.
+    function restrictCreative(objective) {
+      const $sel = $("#creativeVariety");
+      const videoOnly = (objective === "video_views");
+      $sel.find("option[value='standard'], option[value='static']").prop("disabled", videoOnly);
+      if (videoOnly && ($sel.val() === "standard" || $sel.val() === "static")) {
+        $sel.val("cinematic");
+      }
+      $("#creativeNote").toggle(videoOnly);
+    }
+
+    function calculateSimulator() {
+      const marketKey = $("#marketSelect").val() || "saudi";
+      const objective = $("#objectiveSelect").val() || "awareness";
+
+      // Enforce creative compatibility before reading the creative value.
+      restrictCreative(objective);
+
+      const budget = Math.max(parseFloat($("#budgetRange").val()) || 0, 0);
+      const duration = Math.max(parseInt($("#durationRange").val(), 10) || 1, 1);
+      const freqCap = Math.max(parseFloat($("#frequencyRange").val()) || 1, 1);
+      const creative = $("#creativeVariety").val() || "standard";
+      const audienceNiche = $("#audienceNiche").val() || "broad";
+
+      $("#budgetLabel").text(formatMoney(budget));
+      $("#durationLabel").text(duration + (duration === 1 ? " day" : " days"));
+      $("#frequencyLabel").text(freqCap.toFixed(1) + "x");
+      $("#pacingLabel, #statusLabel").text(pacingLabel(currentPacing));
+
+      const result = planner.calculate({
+        marketKey,
+        objective,
+        totalBudget: budget,
+        duration,
+        targetFrequency: freqCap,
+        pacing: currentPacing,
+        audienceNiche,
+        creativeFactor: creative
+      });
+      const s = result.summary;
+      const view = buildView(objective, creative);
+
+      $("#consolidatorBanner").toggle(!!result.consolidated);
+
+      renderKpis(s, view);
+
+      const platforms = Object.values(result.splits).sort((a, b) => b.percentage - a.percentage);
+      const allocationSummary = platforms.slice(0, 2).map(p => p.name).join(" + ");
+      $("#primaryChannel").text(allocationSummary ? `${allocationSummary} lead the allocation.` : "Allocation pending.");
+      renderPlatforms(platforms, s, view);
+
+      const marketName = (MarketDatabase[marketKey] || MarketDatabase.saudi).name;
+      const avgFrequency = s.reach > 0 ? s.impressions / Math.max(s.reach, 100) : 0;
+      let diagnostic = `<strong>Live recommendation:</strong> ${marketName} is modeled with ${pacingLabel(currentPacing).toLowerCase()} pacing and an estimated blended frequency of ${avgFrequency.toFixed(1)}x. Use the platform mix to protect learning volume and manage creative fatigue.`;
+      let warning = false;
+      if (result.consolidated) {
+        diagnostic = `<strong>Warning:</strong> Platform learning guardrail is active. Smaller budget streams were collapsed because they could fall below the $50/day floor. Increase budget, extend duration, or reduce the number of active platforms for stronger delivery quality.`;
+        warning = true;
+      } else if (avgFrequency > 6) {
+        diagnostic = `<strong>Warning:</strong> Estimated blended frequency is ${avgFrequency.toFixed(1)}x. Additional spend may increase repeated exposure faster than unique reach. Rotate creative or widen the audience.`;
+        warning = true;
+      }
+      $("#diagnosticOut").toggleClass("warning", warning).html(diagnostic);
+
+      drawPacingChart(result.trajectory);
+    }
+
+    function drawPacingChart(trajectory) {
+      const canvas = document.getElementById("pacingChart");
+      if (!canvas) return;
+
+      if (typeof Chart === "undefined") {
+        $(".chart-wrap").html('<p style="color:#86868b;font-size:12px;margin-top:16px;">Chart library could not load. Simulator outputs are still active.</p>');
+        return;
+      }
+
+      const ctx = canvas.getContext("2d");
+      const labels = trajectory.map(t => `Day ${t.day}`);
+      const dataPoints = trajectory.map(t => Math.round(t.spend));
+
+      // Vibrant gradient stroke + soft area fill for an Apple-Keynote feel.
+      const w = canvas.clientWidth || canvas.width || 600;
+      const hgt = canvas.clientHeight || canvas.height || 220;
+      const lineGrad = ctx.createLinearGradient(0, 0, w, 0);
+      lineGrad.addColorStop(0, "#0a84ff");
+      lineGrad.addColorStop(0.5, "#5e5ce6");
+      lineGrad.addColorStop(1, "#bf5af2");
+      const fillGrad = ctx.createLinearGradient(0, 0, 0, hgt);
+      fillGrad.addColorStop(0, "rgba(94,92,230,0.22)");
+      fillGrad.addColorStop(1, "rgba(94,92,230,0)");
+
+      if (pacingChartInstance) pacingChartInstance.destroy();
+
+      pacingChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Daily budget pace",
+            data: dataPoints,
+            borderColor: lineGrad,
+            backgroundColor: fillGrad,
+            borderWidth: 2.5,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.35
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => formatMoney(ctx.parsed.y) } } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: "#86868b", font: { size: 10 }, maxTicksLimit: 6 } },
+            y: { grid: { color: "#e8e8ed" }, ticks: { color: "#86868b", font: { size: 10 }, callback: value => "$" + compactNumber(value) } }
+          }
+        }
+      });
+    }
+
+    $(document).ready(function () {
+      updateMarketPanel($("#marketSelect").val() || "saudi");
 
       $(".market-btn").on("click", function () {
         const marketKey = $(this).data("market");
@@ -1465,48 +2174,41 @@
       $("#marketSelect").on("change", function () {
         const marketKey = $(this).val();
         $(".market-btn").removeClass("active");
-        $(`.market-btn[data-market="${marketKey}"]`).addClass("active");
+        $(`.market-btn[data-market='${marketKey}']`).addClass("active");
         updateMarketPanel(marketKey);
         calculateSimulator();
       });
 
       $(".seg-btn").on("click", function () {
-        currentPacing = $(this).data("pacing");
         $(".seg-btn").removeClass("active");
         $(this).addClass("active");
+        currentPacing = $(this).data("pacing") || "linear";
         calculateSimulator();
       });
 
-      $("#budgetRange, #objectiveSelect, #durationRange, #frequencyRange").on("input change", calculateSimulator);
-
-      $("a[href^='#']").on("click", function (event) {
-        const target = $($(this).attr("href"));
-        if (target.length) {
-          event.preventDefault();
-          $("html, body").animate({ scrollTop: target.offset().top - 44 }, 500);
-          $(".nav").removeClass("open");
-          $(".menu-toggle").attr("aria-expanded", "false");
-        }
-      });
+      $("#budgetRange, #durationRange, #frequencyRange, #objectiveSelect, #creativeVariety, #audienceNiche").on("input change", calculateSimulator);
 
       $(".menu-toggle").on("click", function () {
-        const nav = $(".nav");
-        nav.toggleClass("open");
-        $(this).attr("aria-expanded", nav.hasClass("open") ? "true" : "false");
+        const expanded = $(this).attr("aria-expanded") === "true";
+        $(this).attr("aria-expanded", !expanded);
+        $("#navLinks").toggleClass("open");
       });
 
-      function revealOnScroll() {
-        const trigger = $(window).height() * 0.92;
+      $("#navLinks a").on("click", function () {
+        $("#navLinks").removeClass("open");
+        $(".menu-toggle").attr("aria-expanded", "false");
+      });
+
+      const reveal = () => {
         $(".fade-up").each(function () {
           const top = this.getBoundingClientRect().top;
-          if (top < trigger) $(this).addClass("visible");
+          if (top < window.innerHeight - 70) $(this).addClass("visible");
         });
-      }
+      };
+      reveal();
+      $(window).on("scroll", reveal);
 
-      $(window).on("scroll resize", revealOnScroll);
-      updateMarketPanel("saudi");
       calculateSimulator();
-      revealOnScroll();
     });
   </script>
 </body>
