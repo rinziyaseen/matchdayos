@@ -85,6 +85,22 @@ His work spans media planning, audience intelligence, attribution, performance m
 
 ---
 
+## Open Source
+
+MatchdayOS is an open-source project. You can explore the source code, run your own copy, improve features, and share your changes with the community.
+
+The project is released under the [MIT License](LICENSE), which permits personal and commercial use, modification, and redistribution with the required copyright and permission notice.
+
+### Getting Started
+
+Clone this repository and open `index.html` in a modern browser. The project is currently delivered as a static web application; some features may rely on third-party resources or browser connectivity.
+
+### Contributing
+
+Contributions are welcome. Open an issue to discuss bugs or feature ideas, or submit a pull request with a clear explanation of your changes. Please avoid committing API keys, credentials, or confidential campaign data.
+
+---
+
 ## Discussions
 
 Have ideas, feedback, or questions?
