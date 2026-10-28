@@ -182,7 +182,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       max-width: 860px;
       margin: 0 auto;
       font-size: clamp(44px, 7vw, 88px);
-      line-height: .94;
+      line-height: 1.15;
       letter-spacing: -.065em;
       font-weight: 750;
       background: linear-gradient(118deg, #1d1d1f 0%, #1d1d1f 22%, #0a84ff 50%, #5e5ce6 68%, #bf5af2 84%, #ff375f 100%);
@@ -300,7 +300,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .section-head h2 {
       margin: 0;
       font-size: clamp(30px, 4vw, 54px);
-      line-height: .98;
+      line-height: 1.16;
       letter-spacing: -.055em;
       font-weight: 750;
     }
@@ -414,7 +414,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .panel-top h3 {
       margin: 0 0 8px;
       font-size: clamp(32px, 4.5vw, 58px);
-      line-height: .95;
+      line-height: 1.16;
       letter-spacing: -.06em;
       font-weight: 760;
     }
@@ -436,7 +436,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .large-number strong {
       display: block;
       font-size: clamp(38px, 5vw, 72px);
-      line-height: .9;
+      line-height: 1.16;
       letter-spacing: -.06em;
       font-weight: 760;
     }
@@ -656,7 +656,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .metric strong {
       display: block;
       font-size: clamp(20px, 2.2vw, 30px);
-      line-height: .98;
+      line-height: 1.16;
       letter-spacing: -.05em;
     }
 
@@ -774,7 +774,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .closing h2 {
       margin: 0 0 8px;
       font-size: clamp(26px, 3.3vw, 42px);
-      line-height: 1;
+      line-height: 1.16;
       letter-spacing: -.055em;
     }
 
@@ -1105,6 +1105,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       .chart-wrap { height: 220px; }
     }
 
+
+    /* Safe typographic metrics across desktop, tablet, and mobile. */
+    .hero h1, .section-head h2, .panel-top h3, .closing h2,
+    .large-number strong, .metric strong {
+      padding-block: .06em .12em;
+      overflow: visible;
+      text-wrap: balance;
+    }
+    .hero h1, .section-head h2, .panel-top h3, .closing h2 {
+      overflow-wrap: break-word;
+    }
+    .product-strip > *, .audience-board > *, .sim-grid > *,
+    .engine-panels > *, .metric-grid > *, .framework-grid > * {
+      min-width: 0;
+    }
 
     /* Mobile overflow protection: keep content visible instead of clipping it. */
     .container, main, section, .panel, .control-card, .result-card,
