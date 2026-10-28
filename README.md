@@ -98,16 +98,6 @@ Visit the Discussions section to:
 
 ---
 
-## License
-
-MatchdayOS is free to use for personal, educational, research, and internal business planning purposes.
-
-The platform, source code, branding, methodologies, and planning frameworks remain proprietary and may not be copied, modified, redistributed, or commercialized without written permission.
-
-Copyright © 2026 Rinzi Muhammed Muhammed Yaseen. All Rights Reserved.
-
----
-
 ## Disclaimer
 
 MatchdayOS is a decision-support platform.
